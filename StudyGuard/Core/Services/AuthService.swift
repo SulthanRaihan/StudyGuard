@@ -65,7 +65,9 @@ final class AuthService: ObservableObject {
 
     /// Maps the most common Firebase auth errors to friendly Indonesian copy.
     private func message(for error: Error) -> String {
-        let code = AuthErrorCode(rawValue: (error as NSError).code)
+        guard let code = AuthErrorCode.Code(rawValue: (error as NSError).code) else {
+            return error.localizedDescription
+        }
         switch code {
         case .invalidEmail: return "Format email tidak valid."
         case .wrongPassword, .invalidCredential: return "Email atau kata sandi salah."
