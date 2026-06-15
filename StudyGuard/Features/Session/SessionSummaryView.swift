@@ -18,12 +18,14 @@ struct SessionSummaryView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
-                VStack(spacing: 6) {
-                    Image(systemName: "checkmark.seal.fill")
-                        .font(.system(size: 52)).foregroundStyle(Theme.green)
-                    Text("\(result.subject) session done")
+                VStack(spacing: 8) {
+                    BrandImage(name: "GuriCelebrate", fallbackSystemName: "checkmark.seal.fill")
+                        .frame(height: 150)
+                    Text("\(result.subject) session done!")
                         .font(.title2.bold()).foregroundStyle(Theme.navy)
                         .multilineTextAlignment(.center)
+                    Text("Great work — Guri is proud of you! 🎉")
+                        .font(.subheadline).foregroundStyle(Theme.muted)
                 }
                 .padding(.top, 12)
 

@@ -212,8 +212,9 @@ struct SessionView: View {
         ZStack {
             Color.black.opacity(0.85).ignoresSafeArea()
             VStack(spacing: 18) {
-                Image(systemName: "checkmark.circle.fill").font(.system(size: 60)).foregroundStyle(.green)
-                Text("Session complete").font(.title.bold())
+                BrandImage(name: "GuriCelebrate", fallbackSystemName: "checkmark.circle.fill")
+                    .frame(height: 130)
+                Text("Session complete!").font(.title.bold())
                 Text(reasonText(reason))
                     .font(.subheadline).foregroundStyle(.white.opacity(0.8)).multilineTextAlignment(.center)
 
