@@ -51,7 +51,10 @@ final class CameraManager: NSObject, ObservableObject {
     func requestAccess(completion: @escaping (Bool) -> Void) {
         AVCaptureDevice.requestAccess(for: .video) { [weak self] granted in
             DispatchQueue.main.async {
-                self?.authorizationState = granted ? .authorized : .denied
+                let newState: AuthorizationState = granted ? .authorized : .denied
+                if self?.authorizationState != newState {
+                    self?.authorizationState = newState
+                }
                 completion(granted)
             }
         }
@@ -69,7 +72,9 @@ final class CameraManager: NSObject, ObservableObject {
             }
             if !self.session.isRunning {
                 self.session.startRunning()
-                DispatchQueue.main.async { self.isRunning = true }
+                DispatchQueue.main.async {
+                    if !self.isRunning { self.isRunning = true }
+                }
             }
         }
     }
@@ -80,7 +85,9 @@ final class CameraManager: NSObject, ObservableObject {
             guard let self else { return }
             if self.session.isRunning {
                 self.session.stopRunning()
-                DispatchQueue.main.async { self.isRunning = false }
+                DispatchQueue.main.async {
+                    if self.isRunning { self.isRunning = false }
+                }
             }
         }
     }

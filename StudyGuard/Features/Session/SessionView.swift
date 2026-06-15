@@ -130,19 +130,22 @@ struct SessionView: View {
     // MARK: - Lifecycle
 
     private func start() {
-        switch camera.authorizationState {
-        case .authorized:
-            camera.start()
-            posture.connect(to: camera)
-        case .notDetermined:
-            camera.requestAccess { granted in
-                if granted {
+        // Defer past the current SwiftUI update so side-effecting @Published
+        // mutations don't fire "within view updates".
+        DispatchQueue.main.async {
+            switch camera.authorizationState {
+            case .authorized:
+                camera.start()
+                posture.connect(to: camera)
+            case .notDetermined:
+                camera.requestAccess { granted in
+                    guard granted else { return }
                     camera.start()
                     posture.connect(to: camera)
                 }
+            case .denied:
+                break
             }
-        case .denied:
-            break
         }
     }
 
