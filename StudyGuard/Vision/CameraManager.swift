@@ -119,7 +119,13 @@ final class CameraManager: NSObject, ObservableObject {
         }
 
         if let connection = videoOutput.connection(with: .video) {
-            connection.isVideoMirrored = true
+            // Feed Vision the TRUE geometry (un-mirrored): mirroring the data would
+            // swap anatomical left/right and flip TLR/TLL classifications. The selfie
+            // mirror is applied to the preview layer only (see CameraPreviewView).
+            if connection.isVideoMirroringSupported {
+                connection.automaticallyAdjustsVideoMirroring = false
+                connection.isVideoMirrored = false
+            }
             if connection.isVideoOrientationSupported {
                 connection.videoOrientation = .portrait
             }
