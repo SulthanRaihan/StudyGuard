@@ -17,6 +17,11 @@
 		C7E934C252ACA0265B381984 /* FocusDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72100A898E3DD23F425C3196 /* FocusDetector.swift */; };
 		82A707156A95AFA259E79E59 /* FocusManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1957106DA103537804C9694A /* FocusManager.swift */; };
 		02BCF6E2F86D522F58CC5E64 /* VoiceAlertService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BF5E28D4C88A9152DBCA152 /* VoiceAlertService.swift */; };
+		AD14026CF98C778B28812E75 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2408FC9CFB325E70A99F2997 /* AuthService.swift */; };
+		FC023F1AB6E6916C0E040B6C /* FirebaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9479033F5E033C59C81102A2 /* FirebaseService.swift */; };
+		E8210928A8316299378E9080 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB7E9EC6C7F33D26C13A2BEB /* LoginView.swift */; };
+		E716523AB80EBDC9A0813137 /* RegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E850376B4D3D52E9FD36762E /* RegisterView.swift */; };
+		56B9FEE5BD5D3A22F3256872 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3C268599315F7A5B9CD1B /* HomeView.swift */; };
 		449AF1AFE2E8D53CA874EF0C /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B5EE283BD514B38F1254144 /* SessionManager.swift */; };
 		E0B8547DFB1771704F630AF5 /* PreSessionSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E8FCDA7BDE8DCA2D15D1338 /* PreSessionSetupView.swift */; };
 		92CC313D40574169944AFAF4 /* FocusScoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 154BFD4AE1253807E746798C /* FocusScoreView.swift */; };
@@ -68,6 +73,11 @@
 		72100A898E3DD23F425C3196 /* FocusDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusDetector.swift; sourceTree = "<group>"; };
 		1957106DA103537804C9694A /* FocusManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusManager.swift; sourceTree = "<group>"; };
 		5BF5E28D4C88A9152DBCA152 /* VoiceAlertService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceAlertService.swift; sourceTree = "<group>"; };
+		2408FC9CFB325E70A99F2997 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
+		9479033F5E033C59C81102A2 /* FirebaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseService.swift; sourceTree = "<group>"; };
+		CB7E9EC6C7F33D26C13A2BEB /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		E850376B4D3D52E9FD36762E /* RegisterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterView.swift; sourceTree = "<group>"; };
+		34B3C268599315F7A5B9CD1B /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		2B5EE283BD514B38F1254144 /* SessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManager.swift; sourceTree = "<group>"; };
 		8E8FCDA7BDE8DCA2D15D1338 /* PreSessionSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreSessionSetupView.swift; sourceTree = "<group>"; };
 		154BFD4AE1253807E746798C /* FocusScoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusScoreView.swift; sourceTree = "<group>"; };
@@ -133,6 +143,8 @@
 		553131CC809EB3D33CAD9373 /* Features */ = {
 			isa = PBXGroup;
 			children = (
+				AB855EB5DCAB682519ABE4E1 /* Auth */,
+				D53BA29BC67F97D13311D471 /* Home */,
 				61484D0E4BAAC449C79AB861 /* PreSession */,
 				846FFA1773787F5E8E6AEB1F /* Session */,
 			);
@@ -251,9 +263,28 @@
 		AFEB169F0C920BF1949331F0 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				2408FC9CFB325E70A99F2997 /* AuthService.swift */,
+				9479033F5E033C59C81102A2 /* FirebaseService.swift */,
 				5BF5E28D4C88A9152DBCA152 /* VoiceAlertService.swift */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		AB855EB5DCAB682519ABE4E1 /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				CB7E9EC6C7F33D26C13A2BEB /* LoginView.swift */,
+				E850376B4D3D52E9FD36762E /* RegisterView.swift */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
+		D53BA29BC67F97D13311D471 /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				34B3C268599315F7A5B9CD1B /* HomeView.swift */,
+			);
+			path = Home;
 			sourceTree = "<group>";
 		};
 		61484D0E4BAAC449C79AB861 /* PreSession */ = {
@@ -425,6 +456,11 @@
 				02BCF6E2F86D522F58CC5E64 /* VoiceAlertService.swift in Sources */,
 				449AF1AFE2E8D53CA874EF0C /* SessionManager.swift in Sources */,
 				E0B8547DFB1771704F630AF5 /* PreSessionSetupView.swift in Sources */,
+				AD14026CF98C778B28812E75 /* AuthService.swift in Sources */,
+				FC023F1AB6E6916C0E040B6C /* FirebaseService.swift in Sources */,
+				E8210928A8316299378E9080 /* LoginView.swift in Sources */,
+				E716523AB80EBDC9A0813137 /* RegisterView.swift in Sources */,
+				56B9FEE5BD5D3A22F3256872 /* HomeView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

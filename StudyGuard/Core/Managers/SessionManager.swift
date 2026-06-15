@@ -35,6 +35,7 @@ final class SessionManager: ObservableObject {
 
     let subject: String
     let targetDuration: Int            // minutes (user's choice)
+    private(set) var startedAt = Date()
     private var targetSeconds: Int     // mutable: adaptive timer can extend it
 
     // MARK: - Owned managers
@@ -64,6 +65,7 @@ final class SessionManager: ObservableObject {
     // MARK: - Lifecycle
 
     func start() {
+        startedAt = Date()
         camera.start()
         posture.connect(to: camera)
         focus.connect(to: camera)
