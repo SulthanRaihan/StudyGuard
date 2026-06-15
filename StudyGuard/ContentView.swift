@@ -18,16 +18,21 @@ struct ContentView: View {
     }
 }
 
-/// Switches between login and registration.
+/// Onboarding -> login / registration.
 private struct AuthFlow: View {
     @ObservedObject var auth: AuthService
-    @State private var showRegister = false
+    @State private var screen: Screen = .onboarding
+
+    private enum Screen { case onboarding, login, register }
 
     var body: some View {
-        if showRegister {
-            RegisterView(auth: auth) { showRegister = false }
-        } else {
-            LoginView(auth: auth) { showRegister = true }
+        switch screen {
+        case .onboarding:
+            OnboardingView(onSignUp: { screen = .register }, onSignIn: { screen = .login })
+        case .login:
+            LoginView(auth: auth) { screen = .register }
+        case .register:
+            RegisterView(auth: auth) { screen = .login }
         }
     }
 }
