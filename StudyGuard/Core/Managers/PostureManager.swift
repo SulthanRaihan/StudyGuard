@@ -45,7 +45,19 @@ final class PostureManager: ObservableObject {
     private var lastInference = Date.distantPast
     private let minInterval: TimeInterval = 0.2   // cap at ~5 inferences/sec
 
+    // MARK: - Smoothing config
+
+    /// Per-frame predictions jitter; we report a posture only after it dominates a
+    /// short window, so small movements don't flicker the label (or trigger voice).
+    private let minConfidence: Double = 0.30        // ignore weak predictions
+    private let smoothingWindow: TimeInterval = 1.2 // majority-vote horizon
+    private let switchThreshold: Double = 0.60      // share of window needed to switch
+
     // MARK: - Scoring state (inferenceQueue only)
+
+    private struct Raw { let time: Date; let type: PostureType; let confidence: Double }
+    private var rawHistory: [Raw] = []
+    private var stableType: PostureType?
 
     private struct Sample { let time: Date; let isGood: Bool; let type: PostureType }
     private var window: [Sample] = []
@@ -74,6 +86,8 @@ final class PostureManager: ObservableObject {
         cancellable = nil
         inferenceQueue.async { [weak self] in
             self?.window.removeAll()
+            self?.rawHistory.removeAll()
+            self?.stableType = nil
             self?.badSince = nil
             self?.badType = nil
         }
@@ -115,26 +129,62 @@ final class PostureManager: ObservableObject {
         guard let detector else { return }
 
         let result: PostureResult? = try? detector.detectPosture(in: pixelBuffer, orientation: orientation)
+        let now = Date()
 
         guard let result else {
-            // No body / not enough confident joints — leave scoring window untouched.
-            publish(posture: nil, confidence: 0, bodyDetected: false,
+            // No body detected — leave scoring/history untouched, keep last stable label.
+            publish(posture: stableType, confidence: 0, bodyDetected: false,
                     score: currentScore(), dominant: currentDominant(), alert: nil)
             return
         }
 
-        let now = Date()
-        window.append(Sample(time: now, isGood: result.type.isGood, type: result.type))
-        pruneWindow(now: now)
+        // Feed confident predictions into the smoothing history, then resolve a
+        // stable posture by majority vote with hysteresis.
+        if result.confidence >= minConfidence {
+            rawHistory.append(Raw(time: now, type: result.type, confidence: result.confidence))
+        }
+        pruneRawHistory(now: now)
+        stableType = smoothedPosture()
 
-        let alert = updateAlert(for: result.type, now: now)
+        if let stable = stableType {
+            window.append(Sample(time: now, isGood: stable.isGood, type: stable))
+            pruneWindow(now: now)
+        }
 
-        publish(posture: result.type,
-                confidence: result.confidence,
+        let alert = stableType.flatMap { updateAlert(for: $0, now: now) }
+
+        publish(posture: stableType,
+                confidence: smoothedConfidence(for: stableType),
                 bodyDetected: true,
                 score: currentScore(),
                 dominant: currentDominant(),
                 alert: alert)
+    }
+
+    // MARK: - Temporal smoothing (inferenceQueue)
+
+    private func pruneRawHistory(now: Date) {
+        let cutoff = now.addingTimeInterval(-smoothingWindow)
+        rawHistory.removeAll { $0.time < cutoff }
+    }
+
+    /// Majority class over the recent window. Switches the reported posture only
+    /// when a challenger reaches `switchThreshold`; otherwise the current stable
+    /// posture sticks (hysteresis). Reports immediately at startup.
+    private func smoothedPosture() -> PostureType? {
+        guard !rawHistory.isEmpty else { return stableType }
+        let counts = Dictionary(grouping: rawHistory, by: { $0.type }).mapValues(\.count)
+        guard let top = counts.max(by: { $0.value < $1.value }) else { return stableType }
+        if top.key == stableType { return stableType }
+        let share = Double(top.value) / Double(rawHistory.count)
+        return share >= switchThreshold ? top.key : (stableType ?? top.key)
+    }
+
+    private func smoothedConfidence(for type: PostureType?) -> Double {
+        guard let type else { return 0 }
+        let matching = rawHistory.filter { $0.type == type }
+        guard !matching.isEmpty else { return 0 }
+        return matching.map(\.confidence).reduce(0, +) / Double(matching.count)
     }
 
     // MARK: - Scoring (inferenceQueue)
