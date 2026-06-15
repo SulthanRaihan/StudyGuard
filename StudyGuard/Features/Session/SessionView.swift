@@ -260,6 +260,6 @@ private extension PostureType {
 
 struct SessionView_Previews: PreviewProvider {
     static var previews: some View {
-        SessionView(session: SessionManager(subject: "Matematika", targetDuration: 25)) {}
+        SessionView(session: SessionManager(subject: "Matematika", targetDuration: 25)) { _ in }
     }
 }
