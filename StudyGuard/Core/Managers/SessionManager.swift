@@ -31,6 +31,7 @@ final class SessionManager: ObservableObject {
     @Published private(set) var avgPosture: Double = 100
     @Published private(set) var avgFocus: Double = 100
     @Published private(set) var postureAlertCount = 0
+    @Published private(set) var distractionCount = 0
 
     // MARK: - Config
 
@@ -122,6 +123,7 @@ final class SessionManager: ObservableObject {
             avgPosture: avgPosture,
             avgFocus: avgFocus,
             postureAlertCount: postureAlertCount,
+            distractionCount: distractionCount,
             dominantIssue: posture.dominantIssue,
             focusTimeline: focusTimeline,
             startedAt: startedAt
@@ -152,6 +154,16 @@ final class SessionManager: ObservableObject {
         if elapsedSeconds % 60 == 0 {
             focusTimeline.append(Int(focus.focusScore))
             checkAdaptiveTimer()
+        }
+        // Periodic wellness reminders (voice).
+        if elapsedSeconds > 0 {
+            if elapsedSeconds % (20 * 60) == 0 {
+                voice.speak("Time to rest your eyes — look at something far away for 20 seconds.",
+                            key: "eye-rest", cooldown: 60)
+            }
+            if elapsedSeconds % (30 * 60) == 0 {
+                voice.speak("Don't forget to drink some water!", key: "water", cooldown: 60)
+            }
         }
         if remainingSeconds == 0 {
             end(reason: .timerComplete)
@@ -198,6 +210,7 @@ final class SessionManager: ObservableObject {
                 case .drowsy:
                     self.voice.speak("You look drowsy — take a deep breath.", key: "drowsy", cooldown: 20)
                 case .distracted:
+                    self.distractionCount += 1
                     self.voice.speak("Let's get back to your study material.", key: "distracted", cooldown: 45)
                 case .focused:
                     break

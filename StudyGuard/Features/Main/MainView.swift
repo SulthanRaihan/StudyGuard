@@ -103,7 +103,8 @@ struct MainView: View {
                 userId: userId, subject: result.subject, startTime: result.startedAt,
                 totalSeconds: result.totalSeconds, targetMinutes: result.targetMinutes,
                 postureScore: result.avgPosture, focusScore: result.avgFocus,
-                postureAlertCount: result.postureAlertCount, status: "completed"
+                postureAlertCount: result.postureAlertCount,
+                distractionCount: result.distractionCount, status: "completed"
             )
         }
     }

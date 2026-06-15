@@ -19,6 +19,7 @@
 		02BCF6E2F86D522F58CC5E64 /* VoiceAlertService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BF5E28D4C88A9152DBCA152 /* VoiceAlertService.swift */; };
 		AD14026CF98C778B28812E75 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2408FC9CFB325E70A99F2997 /* AuthService.swift */; };
 		FC023F1AB6E6916C0E040B6C /* FirebaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9479033F5E033C59C81102A2 /* FirebaseService.swift */; };
+		95C9AD8F0725187B31D416CA /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C99F8EBF5D9153A7AE432E9 /* NotificationService.swift */; };
 		E8210928A8316299378E9080 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB7E9EC6C7F33D26C13A2BEB /* LoginView.swift */; };
 		E716523AB80EBDC9A0813137 /* RegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E850376B4D3D52E9FD36762E /* RegisterView.swift */; };
 		56B9FEE5BD5D3A22F3256872 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3C268599315F7A5B9CD1B /* HomeView.swift */; };
@@ -91,6 +92,7 @@
 		5BF5E28D4C88A9152DBCA152 /* VoiceAlertService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceAlertService.swift; sourceTree = "<group>"; };
 		2408FC9CFB325E70A99F2997 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
 		9479033F5E033C59C81102A2 /* FirebaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseService.swift; sourceTree = "<group>"; };
+		3C99F8EBF5D9153A7AE432E9 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		CB7E9EC6C7F33D26C13A2BEB /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		E850376B4D3D52E9FD36762E /* RegisterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterView.swift; sourceTree = "<group>"; };
 		34B3C268599315F7A5B9CD1B /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -308,6 +310,7 @@
 				5BF5E28D4C88A9152DBCA152 /* VoiceAlertService.swift */,
 				1CE882BF5DD03D1AB989492F /* GroqService.swift */,
 				C18C1D8C55973288D40C27E4 /* ExerciseAPIService.swift */,
+				3C99F8EBF5D9153A7AE432E9 /* NotificationService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -547,6 +550,7 @@
 				E0B8547DFB1771704F630AF5 /* PreSessionSetupView.swift in Sources */,
 				AD14026CF98C778B28812E75 /* AuthService.swift in Sources */,
 				FC023F1AB6E6916C0E040B6C /* FirebaseService.swift in Sources */,
+				95C9AD8F0725187B31D416CA /* NotificationService.swift in Sources */,
 				E8210928A8316299378E9080 /* LoginView.swift in Sources */,
 				E716523AB80EBDC9A0813137 /* RegisterView.swift in Sources */,
 				56B9FEE5BD5D3A22F3256872 /* HomeView.swift in Sources */,

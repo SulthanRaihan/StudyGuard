@@ -95,6 +95,7 @@ final class FirebaseService {
                        postureScore: Double,
                        focusScore: Double,
                        postureAlertCount: Int,
+                       distractionCount: Int = 0,
                        status: String) async throws -> Int {
 
         let userRef = db.collection("users").document(userId)
@@ -140,7 +141,7 @@ final class FirebaseService {
             "totalDuration": totalSeconds,
             "focusScore": focusScore,
             "postureScore": postureScore,
-            "distractionCount": 0,
+            "distractionCount": distractionCount,
             "postureAlertCount": postureAlertCount,
             "xpEarned": xpEarned,
             "status": status

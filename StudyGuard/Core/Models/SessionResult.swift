@@ -13,6 +13,7 @@ struct SessionResult {
     let avgPosture: Double
     let avgFocus: Double
     let postureAlertCount: Int
+    var distractionCount: Int = 0
     let dominantIssue: PostureType?
     let focusTimeline: [Int]     // per-minute focus score
     let startedAt: Date

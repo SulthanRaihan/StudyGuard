@@ -54,9 +54,16 @@ struct BreakView: View {
             .padding(24)
         }
         .background(Theme.cream.ignoresSafeArea())
-        .task { await loadExercises() }
+        .task {
+            await loadExercises()
+            await NotificationService.shared.requestAuthorization()
+            NotificationService.shared.scheduleBreakEnd(after: Double(result.breakMinutes * 60))
+        }
         .onAppear(perform: startTimer)
-        .onDisappear { timer?.invalidate() }
+        .onDisappear {
+            timer?.invalidate()
+            NotificationService.shared.cancelBreakEnd()
+        }
         .sheet(isPresented: $showChat) {
             BreakChatView(subject: result.subject)
         }
