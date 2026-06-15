@@ -8,10 +8,20 @@
 import SwiftUI
 
 struct ContentView: View {
+    // Milestone 3: PreSession -> Session flow. Auth + Home arrive in later milestones.
+    @State private var activeSession: SessionManager?
+
     var body: some View {
-        // Milestone 1: launch straight into the live posture session for testing.
-        // Real navigation (Auth -> Home -> PreSession -> Session) arrives in later milestones.
-        SessionView()
+        if let session = activeSession {
+            SessionView(session: session) {
+                activeSession = nil
+            }
+            .id(ObjectIdentifier(session))
+        } else {
+            PreSessionSetupView { subject, duration in
+                activeSession = SessionManager(subject: subject, targetDuration: duration)
+            }
+        }
     }
 }
 
