@@ -89,7 +89,7 @@ struct SessionView: View {
         }
         .padding(.vertical, 12)
         .padding(.horizontal, 20)
-        .background(.black.opacity(0.55), in: .rect(cornerRadius: 16))
+        .background(.black.opacity(0.55), in: RoundedRectangle(cornerRadius: 16))
         .animation(.easeInOut(duration: 0.2), value: posture.currentPosture)
     }
 
@@ -116,7 +116,7 @@ struct SessionView: View {
             }
         }
         .padding(16)
-        .background(.black.opacity(0.55), in: .rect(cornerRadius: 16))
+        .background(.black.opacity(0.55), in: RoundedRectangle(cornerRadius: 16))
     }
 
     private var scoreColor: Color {
