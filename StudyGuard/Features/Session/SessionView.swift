@@ -13,10 +13,10 @@ struct SessionView: View {
     @ObservedObject private var posture: PostureManager
     @ObservedObject private var focus: FocusManager
 
-    /// Called when the user dismisses the finished session.
-    let onFinish: () -> Void
+    /// Called with the session's result when the user leaves the finished session.
+    let onFinish: (SessionResult) -> Void
 
-    init(session: SessionManager, onFinish: @escaping () -> Void) {
+    init(session: SessionManager, onFinish: @escaping (SessionResult) -> Void) {
         self.session = session
         self.camera = session.camera
         self.posture = session.posture
@@ -177,10 +177,12 @@ struct SessionView: View {
                 }
                 .padding(.top, 4)
 
-                Button("Selesai", action: onFinish)
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.large)
-                    .padding(.top, 8)
+                Button("Lihat Ringkasan") {
+                    onFinish(session.makeResult())
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+                .padding(.top, 8)
             }
             .padding(32)
             .foregroundStyle(.white)

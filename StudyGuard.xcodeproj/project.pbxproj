@@ -22,6 +22,13 @@
 		E8210928A8316299378E9080 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB7E9EC6C7F33D26C13A2BEB /* LoginView.swift */; };
 		E716523AB80EBDC9A0813137 /* RegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E850376B4D3D52E9FD36762E /* RegisterView.swift */; };
 		56B9FEE5BD5D3A22F3256872 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3C268599315F7A5B9CD1B /* HomeView.swift */; };
+		9EF4CFFE83D685DC55192451 /* SessionResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D4A9C06C2F2D2824D0A01C /* SessionResult.swift */; };
+		C36CC7B60FA8DF14C7DF14EB /* GroqService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CE882BF5DD03D1AB989492F /* GroqService.swift */; };
+		2F65833EACF864312E16FF4B /* ExerciseAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18C1D8C55973288D40C27E4 /* ExerciseAPIService.swift */; };
+		624C447065E100043973367E /* SessionSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DF388926821FD76A1E00D17 /* SessionSummaryView.swift */; };
+		03394CF303543D04757ABF03 /* ExerciseCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79341EF9E2A1A7A72D484D7F /* ExerciseCardView.swift */; };
+		B4AAB42CBDE584FD7B8A8C4A /* BreakChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 306FF293E9E36510B62CC198 /* BreakChatView.swift */; };
+		CC1B5726E6F197331006766B /* BreakView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B14ECDC28018882D83468EA6 /* BreakView.swift */; };
 		449AF1AFE2E8D53CA874EF0C /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B5EE283BD514B38F1254144 /* SessionManager.swift */; };
 		E0B8547DFB1771704F630AF5 /* PreSessionSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E8FCDA7BDE8DCA2D15D1338 /* PreSessionSetupView.swift */; };
 		92CC313D40574169944AFAF4 /* FocusScoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 154BFD4AE1253807E746798C /* FocusScoreView.swift */; };
@@ -79,6 +86,13 @@
 		CB7E9EC6C7F33D26C13A2BEB /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		E850376B4D3D52E9FD36762E /* RegisterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterView.swift; sourceTree = "<group>"; };
 		34B3C268599315F7A5B9CD1B /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		B9D4A9C06C2F2D2824D0A01C /* SessionResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionResult.swift; sourceTree = "<group>"; };
+		1CE882BF5DD03D1AB989492F /* GroqService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroqService.swift; sourceTree = "<group>"; };
+		C18C1D8C55973288D40C27E4 /* ExerciseAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseAPIService.swift; sourceTree = "<group>"; };
+		4DF388926821FD76A1E00D17 /* SessionSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionSummaryView.swift; sourceTree = "<group>"; };
+		79341EF9E2A1A7A72D484D7F /* ExerciseCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseCardView.swift; sourceTree = "<group>"; };
+		306FF293E9E36510B62CC198 /* BreakChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreakChatView.swift; sourceTree = "<group>"; };
+		B14ECDC28018882D83468EA6 /* BreakView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreakView.swift; sourceTree = "<group>"; };
 		2B5EE283BD514B38F1254144 /* SessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManager.swift; sourceTree = "<group>"; };
 		8E8FCDA7BDE8DCA2D15D1338 /* PreSessionSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreSessionSetupView.swift; sourceTree = "<group>"; };
 		154BFD4AE1253807E746798C /* FocusScoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusScoreView.swift; sourceTree = "<group>"; };
@@ -138,6 +152,7 @@
 				417E456639E0067855E42D2A /* FocusEvent.swift */,
 				C44042E43714C4527CE79F26 /* FocusSample.swift */,
 				54B4CD4745E9B85968858E35 /* BreakExercise.swift */,
+				B9D4A9C06C2F2D2824D0A01C /* SessionResult.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -146,6 +161,7 @@
 			isa = PBXGroup;
 			children = (
 				AB855EB5DCAB682519ABE4E1 /* Auth */,
+				7F7FEEA92E6E3DC85C2C5C99 /* Break */,
 				D53BA29BC67F97D13311D471 /* Home */,
 				61484D0E4BAAC449C79AB861 /* PreSession */,
 				846FFA1773787F5E8E6AEB1F /* Session */,
@@ -168,6 +184,7 @@
 			children = (
 				48097BE89943C1AD9CEA4728 /* SessionView.swift */,
 				154BFD4AE1253807E746798C /* FocusScoreView.swift */,
+				4DF388926821FD76A1E00D17 /* SessionSummaryView.swift */,
 			);
 			path = Session;
 			sourceTree = "<group>";
@@ -269,6 +286,8 @@
 				2408FC9CFB325E70A99F2997 /* AuthService.swift */,
 				9479033F5E033C59C81102A2 /* FirebaseService.swift */,
 				5BF5E28D4C88A9152DBCA152 /* VoiceAlertService.swift */,
+				1CE882BF5DD03D1AB989492F /* GroqService.swift */,
+				C18C1D8C55973288D40C27E4 /* ExerciseAPIService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -280,6 +299,16 @@
 				E850376B4D3D52E9FD36762E /* RegisterView.swift */,
 			);
 			path = Auth;
+			sourceTree = "<group>";
+		};
+		7F7FEEA92E6E3DC85C2C5C99 /* Break */ = {
+			isa = PBXGroup;
+			children = (
+				B14ECDC28018882D83468EA6 /* BreakView.swift */,
+				79341EF9E2A1A7A72D484D7F /* ExerciseCardView.swift */,
+				306FF293E9E36510B62CC198 /* BreakChatView.swift */,
+			);
+			path = Break;
 			sourceTree = "<group>";
 		};
 		D53BA29BC67F97D13311D471 /* Home */ = {
@@ -465,6 +494,13 @@
 				E8210928A8316299378E9080 /* LoginView.swift in Sources */,
 				E716523AB80EBDC9A0813137 /* RegisterView.swift in Sources */,
 				56B9FEE5BD5D3A22F3256872 /* HomeView.swift in Sources */,
+				9EF4CFFE83D685DC55192451 /* SessionResult.swift in Sources */,
+				C36CC7B60FA8DF14C7DF14EB /* GroqService.swift in Sources */,
+				2F65833EACF864312E16FF4B /* ExerciseAPIService.swift in Sources */,
+				624C447065E100043973367E /* SessionSummaryView.swift in Sources */,
+				03394CF303543D04757ABF03 /* ExerciseCardView.swift in Sources */,
+				B4AAB42CBDE584FD7B8A8C4A /* BreakChatView.swift in Sources */,
+				CC1B5726E6F197331006766B /* BreakView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -52,6 +52,7 @@ final class SessionManager: ObservableObject {
     private var postureSum = 0.0
     private var focusSum = 0.0
     private var sampleCount = 0
+    private var focusTimeline: [Int] = []   // per-minute focus score, for the Groq summary
 
     init(subject: String, targetDuration: Int, sensitivity: AlertSensitivity = .medium, voiceLanguage: String = "id-ID") {
         self.subject = subject
@@ -85,6 +86,21 @@ final class SessionManager: ObservableObject {
         phase = .finished(reason: reason)
     }
 
+    /// Snapshot of the finished session for the summary, break, and persistence.
+    func makeResult() -> SessionResult {
+        SessionResult(
+            subject: subject,
+            totalSeconds: elapsedSeconds,
+            targetMinutes: targetDuration,
+            avgPosture: avgPosture,
+            avgFocus: avgFocus,
+            postureAlertCount: postureAlertCount,
+            dominantIssue: posture.dominantIssue,
+            focusTimeline: focusTimeline,
+            startedAt: startedAt
+        )
+    }
+
     // MARK: - Timer
 
     private func startTimer() {
@@ -107,6 +123,7 @@ final class SessionManager: ObservableObject {
         avgFocus = focusSum / Double(sampleCount)
 
         if elapsedSeconds % 60 == 0 {
+            focusTimeline.append(Int(focus.focusScore))
             checkAdaptiveTimer()
         }
         if remainingSeconds == 0 {

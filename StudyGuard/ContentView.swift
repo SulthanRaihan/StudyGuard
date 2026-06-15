@@ -32,16 +32,28 @@ private struct AuthFlow: View {
     }
 }
 
-/// Home -> PreSession setup -> live Session, persisting the result on finish.
+/// Home -> PreSession -> Session -> Summary -> Break, persisting the result on finish.
 private struct HomeFlow: View {
     @ObservedObject var auth: AuthService
     @State private var activeSession: SessionManager?
+    @State private var summaryResult: SessionResult?
+    @State private var breakResult: SessionResult?
     @State private var showSetup = false
 
     var body: some View {
         if let session = activeSession {
-            SessionView(session: session) { finish(session) }
-                .id(ObjectIdentifier(session))
+            SessionView(session: session) { result in
+                activeSession = nil
+                save(result)
+                summaryResult = result
+            }
+            .id(ObjectIdentifier(session))
+        } else if let result = summaryResult {
+            SessionSummaryView(result: result,
+                               onStartBreak: { summaryResult = nil; breakResult = result },
+                               onDone: { summaryResult = nil })
+        } else if let result = breakResult {
+            BreakView(result: result) { breakResult = nil }
         } else if showSetup {
             PreSessionSetupView { subject, duration in
                 activeSession = SessionManager(subject: subject, targetDuration: duration)
@@ -52,30 +64,19 @@ private struct HomeFlow: View {
         }
     }
 
-    /// Persist the completed session, then return Home.
-    private func finish(_ session: SessionManager) {
-        let userId = auth.currentUserId
-        let subject = session.subject
-        let totalSeconds = session.elapsedSeconds
-        let targetMinutes = session.targetDuration
-        let posture = session.avgPosture
-        let focus = session.avgFocus
-        let alerts = session.postureAlertCount
-        let startedAt = session.startedAt
-
-        activeSession = nil
-
-        guard let userId, totalSeconds > 0 else { return }
+    /// Persist the completed session and update the user's XP/streak.
+    private func save(_ result: SessionResult) {
+        guard let userId = auth.currentUserId, result.totalSeconds > 0 else { return }
         Task {
             try? await FirebaseService.shared.recordSession(
                 userId: userId,
-                subject: subject,
-                startTime: startedAt,
-                totalSeconds: totalSeconds,
-                targetMinutes: targetMinutes,
-                postureScore: posture,
-                focusScore: focus,
-                postureAlertCount: alerts,
+                subject: result.subject,
+                startTime: result.startedAt,
+                totalSeconds: result.totalSeconds,
+                targetMinutes: result.targetMinutes,
+                postureScore: result.avgPosture,
+                focusScore: result.avgFocus,
+                postureAlertCount: result.postureAlertCount,
                 status: "completed"
             )
         }
