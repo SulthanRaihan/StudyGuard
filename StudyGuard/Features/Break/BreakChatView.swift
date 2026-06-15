@@ -54,7 +54,7 @@ struct BreakChatView: View {
             .navigationTitle("Tanya AI")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Tutup") { dismiss() }
                 }
             }
