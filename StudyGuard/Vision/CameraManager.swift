@@ -19,7 +19,9 @@ final class CameraManager: NSObject, ObservableObject {
     }
 
     @Published var authorizationState: AuthorizationState = .notDetermined
-    @Published var isRunning = false
+    /// Not `@Published`: no view observes it, and publishing it from the session
+    /// queue can coincide with a SwiftUI render pass.
+    private(set) var isRunning = false
 
     /// Emits each captured frame on a background queue.
     let framePublisher = PassthroughSubject<CMSampleBuffer, Never>()
@@ -51,7 +53,10 @@ final class CameraManager: NSObject, ObservableObject {
     func requestAccess(completion: @escaping (Bool) -> Void) {
         AVCaptureDevice.requestAccess(for: .video) { [weak self] granted in
             DispatchQueue.main.async {
-                self?.authorizationState = granted ? .authorized : .denied
+                let newState: AuthorizationState = granted ? .authorized : .denied
+                if self?.authorizationState != newState {
+                    self?.authorizationState = newState
+                }
                 completion(granted)
             }
         }
@@ -69,7 +74,9 @@ final class CameraManager: NSObject, ObservableObject {
             }
             if !self.session.isRunning {
                 self.session.startRunning()
-                DispatchQueue.main.async { self.isRunning = true }
+                DispatchQueue.main.async {
+                    if !self.isRunning { self.isRunning = true }
+                }
             }
         }
     }
@@ -80,7 +87,9 @@ final class CameraManager: NSObject, ObservableObject {
             guard let self else { return }
             if self.session.isRunning {
                 self.session.stopRunning()
-                DispatchQueue.main.async { self.isRunning = false }
+                DispatchQueue.main.async {
+                    if self.isRunning { self.isRunning = false }
+                }
             }
         }
     }
@@ -119,7 +128,13 @@ final class CameraManager: NSObject, ObservableObject {
         }
 
         if let connection = videoOutput.connection(with: .video) {
-            connection.isVideoMirrored = true
+            // Feed Vision the TRUE geometry (un-mirrored): mirroring the data would
+            // swap anatomical left/right and flip TLR/TLL classifications. The selfie
+            // mirror is applied to the preview layer only (see CameraPreviewView).
+            if connection.isVideoMirroringSupported {
+                connection.automaticallyAdjustsVideoMirroring = false
+                connection.isVideoMirrored = false
+            }
             if connection.isVideoOrientationSupported {
                 connection.videoOrientation = .portrait
             }

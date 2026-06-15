@@ -9,13 +9,9 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
-        }
-        .padding()
+        // Milestone 1: launch straight into the live posture session for testing.
+        // Real navigation (Auth -> Home -> PreSession -> Session) arrives in later milestones.
+        SessionView()
     }
 }
 
