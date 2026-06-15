@@ -11,6 +11,7 @@ import SwiftUI
 struct SessionView: View {
     @StateObject private var camera = CameraManager()
     @StateObject private var posture = PostureManager()
+    @StateObject private var focus = FocusManager()
 
     var body: some View {
         ZStack {
@@ -67,9 +68,25 @@ struct SessionView: View {
         VStack {
             postureCard
             Spacer()
-            scoreBadge
+            HStack(alignment: .bottom, spacing: 12) {
+                FocusScoreView(title: "Fokus", score: focus.focusScore, caption: focusCaption)
+                FocusScoreView(title: "Postur", score: posture.postureScore, caption: postureCaption)
+            }
         }
         .padding()
+    }
+
+    private var focusCaption: String {
+        guard focus.isFaceDetected else { return "Wajah tak terlihat" }
+        switch focus.currentState {
+        case .focused: return "Fokus"
+        case .drowsy: return "Mengantuk"
+        case .distracted: return "Teralihkan"
+        }
+    }
+
+    private var postureCaption: String {
+        posture.dominantIssue?.displayName ?? "Tegak"
     }
 
     private var postureCard: some View {
@@ -93,40 +110,6 @@ struct SessionView: View {
         .animation(.easeInOut(duration: 0.2), value: posture.currentPosture)
     }
 
-    private var scoreBadge: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Skor Postur")
-                    .font(.caption)
-                    .foregroundStyle(.white.opacity(0.8))
-                Text("\(Int(posture.postureScore))%")
-                    .font(.system(size: 34, weight: .bold, design: .rounded))
-                    .foregroundStyle(scoreColor)
-            }
-            Spacer()
-            if let issue = posture.dominantIssue {
-                VStack(alignment: .trailing, spacing: 2) {
-                    Text("Masalah utama")
-                        .font(.caption)
-                        .foregroundStyle(.white.opacity(0.8))
-                    Text(issue.displayName)
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.orange)
-                }
-            }
-        }
-        .padding(16)
-        .background(.black.opacity(0.55), in: RoundedRectangle(cornerRadius: 16))
-    }
-
-    private var scoreColor: Color {
-        switch posture.postureScore {
-        case 80...: return .green
-        case 50..<80: return .yellow
-        default: return .orange
-        }
-    }
-
     // MARK: - Lifecycle
 
     private func start() {
@@ -135,13 +118,11 @@ struct SessionView: View {
         DispatchQueue.main.async {
             switch camera.authorizationState {
             case .authorized:
-                camera.start()
-                posture.connect(to: camera)
+                connectDetectors()
             case .notDetermined:
                 camera.requestAccess { granted in
                     guard granted else { return }
-                    camera.start()
-                    posture.connect(to: camera)
+                    connectDetectors()
                 }
             case .denied:
                 break
@@ -149,8 +130,15 @@ struct SessionView: View {
         }
     }
 
+    private func connectDetectors() {
+        camera.start()
+        posture.connect(to: camera)
+        focus.connect(to: camera)
+    }
+
     private func stop() {
         posture.disconnect()
+        focus.disconnect()
         camera.stop()
     }
 }
