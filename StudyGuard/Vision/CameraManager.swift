@@ -19,7 +19,9 @@ final class CameraManager: NSObject, ObservableObject {
     }
 
     @Published var authorizationState: AuthorizationState = .notDetermined
-    @Published var isRunning = false
+    /// Not `@Published`: no view observes it, and publishing it from the session
+    /// queue can coincide with a SwiftUI render pass.
+    private(set) var isRunning = false
 
     /// Emits each captured frame on a background queue.
     let framePublisher = PassthroughSubject<CMSampleBuffer, Never>()

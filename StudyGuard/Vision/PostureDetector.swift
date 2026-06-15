@@ -54,8 +54,10 @@ struct PostureResult {
 /// posture features, and classifies them with `PostureClassifier.mlmodel`.
 final class PostureDetector {
 
-    /// Minimum per-joint confidence required to trust a keypoint.
-    private let minJointConfidence: Float = 0.3
+    /// Minimum per-joint confidence to accept a Vision keypoint. Kept low because
+    /// Vision reports occluded-but-inferred joints with low confidence, and we want
+    /// to use those (the training pipeline likewise relied on estimated keypoints).
+    private let minJointConfidence: Float = 0.1
 
     private let model: PostureClassifier
 
@@ -97,47 +99,65 @@ final class PostureDetector {
         var rightAnkle: CGPoint
     }
 
-    /// Reads the 15 required joints, requiring each to clear
-    /// `minJointConfidence`, and flips `y` to match the MediaPipe
-    /// (top-left origin, y-down) convention used by the training data.
+    /// Builds the 15-joint skeleton, flipping `y` to the training convention
+    /// (top-left origin, y-down).
+    ///
+    /// A desk webcam only reliably sees the upper body, so only the upper-body
+    /// joints are required; occluded lower-body joints are estimated from the
+    /// torso. This mirrors the training pipeline (MediaPipe always emits a full
+    /// skeleton) and keeps the 24-feature vector complete. Returns `nil` only
+    /// when the upper body itself isn't confidently visible.
     private func extractKeypoints(from observation: VNHumanBodyPoseObservation) throws -> Keypoints? {
-        let joints: [VNHumanBodyPoseObservation.JointName] = [
-            .nose, .leftEar, .rightEar,
-            .leftShoulder, .rightShoulder,
-            .leftElbow, .rightElbow,
-            .leftWrist, .rightWrist,
-            .leftHip, .rightHip,
-            .leftKnee, .rightKnee,
-            .leftAnkle, .rightAnkle
-        ]
-
         let recognized = try observation.recognizedPoints(.all)
 
-        var points: [VNHumanBodyPoseObservation.JointName: CGPoint] = [:]
-        for joint in joints {
-            guard let point = recognized[joint], point.confidence >= minJointConfidence else {
-                return nil
-            }
-            // Vision: origin bottom-left, y up -> MediaPipe: origin top-left, y down
-            points[joint] = CGPoint(x: point.location.x, y: 1.0 - point.location.y)
+        // Vision: origin bottom-left, y up -> training: origin top-left, y down.
+        func point(_ joint: VNHumanBodyPoseObservation.JointName) -> CGPoint? {
+            guard let p = recognized[joint], p.confidence >= minJointConfidence else { return nil }
+            return CGPoint(x: p.location.x, y: 1.0 - p.location.y)
         }
 
+        // Required: the upper body that drives the reliable TUP/TLF/TLR/TLL geometry.
+        guard let nose = point(.nose),
+              let leftEar = point(.leftEar),
+              let rightEar = point(.rightEar),
+              let leftShoulder = point(.leftShoulder),
+              let rightShoulder = point(.rightShoulder)
+        else { return nil }
+
+        // Estimate any joint Vision can't see, walking down the body from the torso.
+        let span = max(0.05, hypot(leftShoulder.x - rightShoulder.x,
+                                   leftShoulder.y - rightShoulder.y))
+        func below(_ p: CGPoint, _ factor: CGFloat) -> CGPoint {
+            CGPoint(x: p.x, y: p.y + span * factor)
+        }
+
+        let leftElbow  = point(.leftElbow)  ?? below(leftShoulder, 1.0)
+        let rightElbow = point(.rightElbow) ?? below(rightShoulder, 1.0)
+        let leftWrist  = point(.leftWrist)  ?? below(leftElbow, 1.0)
+        let rightWrist = point(.rightWrist) ?? below(rightElbow, 1.0)
+        let leftHip    = point(.leftHip)    ?? below(leftShoulder, 1.6)
+        let rightHip   = point(.rightHip)   ?? below(rightShoulder, 1.6)
+        let leftKnee   = point(.leftKnee)   ?? below(leftHip, 1.8)
+        let rightKnee  = point(.rightKnee)  ?? below(rightHip, 1.8)
+        let leftAnkle  = point(.leftAnkle)  ?? below(leftKnee, 1.8)
+        let rightAnkle = point(.rightAnkle) ?? below(rightKnee, 1.8)
+
         return Keypoints(
-            nose: points[.nose]!,
-            leftEar: points[.leftEar]!,
-            rightEar: points[.rightEar]!,
-            leftShoulder: points[.leftShoulder]!,
-            rightShoulder: points[.rightShoulder]!,
-            leftElbow: points[.leftElbow]!,
-            rightElbow: points[.rightElbow]!,
-            leftWrist: points[.leftWrist]!,
-            rightWrist: points[.rightWrist]!,
-            leftHip: points[.leftHip]!,
-            rightHip: points[.rightHip]!,
-            leftKnee: points[.leftKnee]!,
-            rightKnee: points[.rightKnee]!,
-            leftAnkle: points[.leftAnkle]!,
-            rightAnkle: points[.rightAnkle]!
+            nose: nose,
+            leftEar: leftEar,
+            rightEar: rightEar,
+            leftShoulder: leftShoulder,
+            rightShoulder: rightShoulder,
+            leftElbow: leftElbow,
+            rightElbow: rightElbow,
+            leftWrist: leftWrist,
+            rightWrist: rightWrist,
+            leftHip: leftHip,
+            rightHip: rightHip,
+            leftKnee: leftKnee,
+            rightKnee: rightKnee,
+            leftAnkle: leftAnkle,
+            rightAnkle: rightAnkle
         )
     }
 
