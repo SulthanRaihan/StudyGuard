@@ -16,6 +16,9 @@
 		74263F2C48CDF716CE1E8AD6 /* PostureManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC61643B39D4585B5330A5A0 /* PostureManager.swift */; };
 		C7E934C252ACA0265B381984 /* FocusDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72100A898E3DD23F425C3196 /* FocusDetector.swift */; };
 		82A707156A95AFA259E79E59 /* FocusManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1957106DA103537804C9694A /* FocusManager.swift */; };
+		02BCF6E2F86D522F58CC5E64 /* VoiceAlertService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BF5E28D4C88A9152DBCA152 /* VoiceAlertService.swift */; };
+		449AF1AFE2E8D53CA874EF0C /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B5EE283BD514B38F1254144 /* SessionManager.swift */; };
+		E0B8547DFB1771704F630AF5 /* PreSessionSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E8FCDA7BDE8DCA2D15D1338 /* PreSessionSetupView.swift */; };
 		92CC313D40574169944AFAF4 /* FocusScoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 154BFD4AE1253807E746798C /* FocusScoreView.swift */; };
 		90894B41219019886F59FEBF /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD3E8F4C1A3BBBE0F8F6467A /* User.swift */; };
 		9CB8DACB80A30E15270F1844 /* SessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48097BE89943C1AD9CEA4728 /* SessionView.swift */; };
@@ -64,6 +67,9 @@
 		BC61643B39D4585B5330A5A0 /* PostureManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostureManager.swift; sourceTree = "<group>"; };
 		72100A898E3DD23F425C3196 /* FocusDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusDetector.swift; sourceTree = "<group>"; };
 		1957106DA103537804C9694A /* FocusManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusManager.swift; sourceTree = "<group>"; };
+		5BF5E28D4C88A9152DBCA152 /* VoiceAlertService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceAlertService.swift; sourceTree = "<group>"; };
+		2B5EE283BD514B38F1254144 /* SessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManager.swift; sourceTree = "<group>"; };
+		8E8FCDA7BDE8DCA2D15D1338 /* PreSessionSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreSessionSetupView.swift; sourceTree = "<group>"; };
 		154BFD4AE1253807E746798C /* FocusScoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusScoreView.swift; sourceTree = "<group>"; };
 		BD3E8F4C1A3BBBE0F8F6467A /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		C44042E43714C4527CE79F26 /* FocusSample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusSample.swift; sourceTree = "<group>"; };
@@ -127,6 +133,7 @@
 		553131CC809EB3D33CAD9373 /* Features */ = {
 			isa = PBXGroup;
 			children = (
+				61484D0E4BAAC449C79AB861 /* PreSession */,
 				846FFA1773787F5E8E6AEB1F /* Session */,
 			);
 			path = Features;
@@ -137,6 +144,7 @@
 			children = (
 				BC61643B39D4585B5330A5A0 /* PostureManager.swift */,
 				1957106DA103537804C9694A /* FocusManager.swift */,
+				2B5EE283BD514B38F1254144 /* SessionManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -235,8 +243,25 @@
 			children = (
 				081C7D47D0DBA71E4A1A2CAF /* Models */,
 				651A7B142220C9DFE7C6CDDB /* Managers */,
+				AFEB169F0C920BF1949331F0 /* Services */,
 			);
 			path = Core;
+			sourceTree = "<group>";
+		};
+		AFEB169F0C920BF1949331F0 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				5BF5E28D4C88A9152DBCA152 /* VoiceAlertService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		61484D0E4BAAC449C79AB861 /* PreSession */ = {
+			isa = PBXGroup;
+			children = (
+				8E8FCDA7BDE8DCA2D15D1338 /* PreSessionSetupView.swift */,
+			);
+			path = PreSession;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -397,6 +422,9 @@
 				C7E934C252ACA0265B381984 /* FocusDetector.swift in Sources */,
 				82A707156A95AFA259E79E59 /* FocusManager.swift in Sources */,
 				92CC313D40574169944AFAF4 /* FocusScoreView.swift in Sources */,
+				02BCF6E2F86D522F58CC5E64 /* VoiceAlertService.swift in Sources */,
+				449AF1AFE2E8D53CA874EF0C /* SessionManager.swift in Sources */,
+				E0B8547DFB1771704F630AF5 /* PreSessionSetupView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

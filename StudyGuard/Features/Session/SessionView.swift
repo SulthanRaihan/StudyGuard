@@ -5,21 +5,35 @@
 
 import SwiftUI
 
-/// The live study screen (Milestone 1 scope): camera feed + real-time posture
-/// classification label and score. Focus, timer, voice alerts, and persistence
-/// arrive in later milestones.
+/// The live study screen: camera feed, real-time posture + focus readouts,
+/// countdown timer, and a post-session summary. Driven by `SessionManager`.
 struct SessionView: View {
-    @StateObject private var camera = CameraManager()
-    @StateObject private var posture = PostureManager()
-    @StateObject private var focus = FocusManager()
+    @ObservedObject private var session: SessionManager
+    @ObservedObject private var camera: CameraManager
+    @ObservedObject private var posture: PostureManager
+    @ObservedObject private var focus: FocusManager
+
+    /// Called when the user dismisses the finished session.
+    let onFinish: () -> Void
+
+    init(session: SessionManager, onFinish: @escaping () -> Void) {
+        self.session = session
+        self.camera = session.camera
+        self.posture = session.posture
+        self.focus = session.focus
+        self.onFinish = onFinish
+    }
 
     var body: some View {
         ZStack {
             cameraLayer
             overlay
+            if case let .finished(reason) = session.phase {
+                finishedOverlay(reason: reason)
+            }
         }
         .onAppear(perform: start)
-        .onDisappear(perform: stop)
+        .onDisappear { session.end() }
     }
 
     // MARK: - Camera layer
@@ -66,6 +80,7 @@ struct SessionView: View {
 
     private var overlay: some View {
         VStack {
+            header
             postureCard
             Spacer()
             HStack(alignment: .bottom, spacing: 12) {
@@ -76,17 +91,33 @@ struct SessionView: View {
         .padding()
     }
 
-    private var focusCaption: String {
-        guard focus.isFaceDetected else { return "Wajah tak terlihat" }
-        switch focus.currentState {
-        case .focused: return "Fokus"
-        case .drowsy: return "Mengantuk"
-        case .distracted: return "Teralihkan"
+    private var header: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(session.subject)
+                    .font(.headline)
+                    .foregroundStyle(.white)
+                Text("Sisa waktu")
+                    .font(.caption2)
+                    .foregroundStyle(.white.opacity(0.7))
+            }
+            Spacer()
+            Text(timeString)
+                .font(.system(size: 30, weight: .bold, design: .rounded).monospacedDigit())
+                .foregroundStyle(.white)
+            Spacer()
+            Button(role: .destructive) {
+                session.end(reason: .userEnded)
+            } label: {
+                Image(systemName: "stop.fill")
+                    .font(.title3)
+                    .padding(10)
+                    .background(.red.opacity(0.85), in: Circle())
+                    .foregroundStyle(.white)
+            }
         }
-    }
-
-    private var postureCaption: String {
-        posture.dominantIssue?.displayName ?? "Tegak"
+        .padding(14)
+        .background(.black.opacity(0.55), in: RoundedRectangle(cornerRadius: 16))
     }
 
     private var postureCard: some View {
@@ -110,6 +141,75 @@ struct SessionView: View {
         .animation(.easeInOut(duration: 0.2), value: posture.currentPosture)
     }
 
+    private var focusCaption: String {
+        guard focus.isFaceDetected else { return "Wajah tak terlihat" }
+        switch focus.currentState {
+        case .focused: return "Fokus"
+        case .drowsy: return "Mengantuk"
+        case .distracted: return "Teralihkan"
+        }
+    }
+
+    private var postureCaption: String {
+        posture.dominantIssue?.displayName ?? "Tegak"
+    }
+
+    // MARK: - Finished overlay
+
+    private func finishedOverlay(reason: SessionManager.EndReason) -> some View {
+        ZStack {
+            Color.black.opacity(0.85).ignoresSafeArea()
+            VStack(spacing: 18) {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: 60))
+                    .foregroundStyle(.green)
+                Text("Sesi selesai")
+                    .font(.title.bold())
+                Text(reasonText(reason))
+                    .font(.subheadline)
+                    .foregroundStyle(.white.opacity(0.8))
+                    .multilineTextAlignment(.center)
+
+                HStack(spacing: 28) {
+                    stat("Durasi", "\(session.elapsedSeconds / 60) mnt")
+                    stat("Postur", "\(Int(session.avgPosture))%")
+                    stat("Fokus", "\(Int(session.avgFocus))%")
+                }
+                .padding(.top, 4)
+
+                Button("Selesai", action: onFinish)
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                    .padding(.top, 8)
+            }
+            .padding(32)
+            .foregroundStyle(.white)
+        }
+    }
+
+    private func stat(_ label: String, _ value: String) -> some View {
+        VStack(spacing: 4) {
+            Text(value)
+                .font(.title3.bold())
+            Text(label)
+                .font(.caption)
+                .foregroundStyle(.white.opacity(0.7))
+        }
+    }
+
+    private func reasonText(_ reason: SessionManager.EndReason) -> String {
+        switch reason {
+        case .timerComplete: return "Kerja bagus! Kamu menyelesaikan sesi sesuai target."
+        case .focusDrop: return "Fokusmu menurun — saatnya istirahat sejenak."
+        case .userEnded: return "Sesi dihentikan."
+        }
+    }
+
+    private var timeString: String {
+        let s = max(0, session.remainingSeconds)
+        return String(format: "%02d:%02d", s / 60, s % 60)
+    }
+
     // MARK: - Lifecycle
 
     private func start() {
@@ -118,28 +218,16 @@ struct SessionView: View {
         DispatchQueue.main.async {
             switch camera.authorizationState {
             case .authorized:
-                connectDetectors()
+                session.start()
             case .notDetermined:
                 camera.requestAccess { granted in
                     guard granted else { return }
-                    connectDetectors()
+                    session.start()
                 }
             case .denied:
                 break
             }
         }
-    }
-
-    private func connectDetectors() {
-        camera.start()
-        posture.connect(to: camera)
-        focus.connect(to: camera)
-    }
-
-    private func stop() {
-        posture.disconnect()
-        focus.disconnect()
-        camera.stop()
     }
 }
 
@@ -170,6 +258,6 @@ private extension PostureType {
 
 struct SessionView_Previews: PreviewProvider {
     static var previews: some View {
-        SessionView()
+        SessionView(session: SessionManager(subject: "Matematika", targetDuration: 25)) {}
     }
 }
