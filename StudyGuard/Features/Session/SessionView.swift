@@ -30,6 +30,7 @@ struct SessionView: View {
         ZStack {
             cameraLayer
             overlay
+            if case .calibrating = session.phase { calibratingOverlay }
             if case .paused = session.phase { pausedOverlay }
             if case let .finished(reason) = session.phase { finishedOverlay(reason: reason) }
         }
@@ -146,6 +147,25 @@ struct SessionView: View {
 
     private var postureCaption: String {
         posture.dominantIssue?.displayName ?? "Upright"
+    }
+
+    // MARK: - Calibrating overlay
+
+    private var calibratingOverlay: some View {
+        ZStack {
+            Color.black.opacity(0.78).ignoresSafeArea()
+            VStack(spacing: 18) {
+                BrandImage(name: "GuriHi", fallbackSystemName: "figure.stand")
+                    .frame(height: 110)
+                ProgressView().tint(.white).scaleEffect(1.3)
+                Text("Calibrating…")
+                    .font(.title2.bold()).foregroundStyle(.white)
+                Text("Sit up straight and look at the screen.\nThis helps Guri learn your good posture.")
+                    .font(.subheadline).foregroundStyle(.white.opacity(0.85))
+                    .multilineTextAlignment(.center)
+            }
+            .padding(32)
+        }
     }
 
     // MARK: - Paused overlay

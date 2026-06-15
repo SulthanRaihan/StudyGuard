@@ -66,8 +66,40 @@ final class PostureManager: ObservableObject {
     private var badSince: Date?
     private var badType: PostureType?
 
+    // Per-user calibration: the class the model predicts when the user sits upright.
+    // The model confuses upright (TUP) with slouching (TLF); learning the user's own
+    // "neutral" prediction lets us treat it as good and avoid false slouch alerts.
+    private var calibrating = false
+    private var calibrationVotes: [PostureType: Int] = [:]
+    private var baselineClass: PostureType?
+
     init() {
         detector = try? PostureDetector()
+    }
+
+    /// Collects the model's predictions for `seconds` (user sitting upright), then
+    /// records the most common one as the user's neutral posture. `completion` runs
+    /// on the main queue.
+    func calibrate(seconds: TimeInterval, completion: @escaping () -> Void) {
+        inferenceQueue.async { [weak self] in
+            self?.calibrationVotes = [:]
+            self?.baselineClass = nil
+            self?.calibrating = true
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + seconds) { [weak self] in
+            guard let self else { completion(); return }
+            self.inferenceQueue.async {
+                self.calibrating = false
+                self.baselineClass = self.calibrationVotes.max { $0.value < $1.value }?.key
+                DispatchQueue.main.async(execute: completion)
+            }
+        }
+    }
+
+    /// Remaps the user's neutral class to "upright" so it isn't flagged as bad.
+    private func normalized(_ type: PostureType) -> PostureType {
+        if let baselineClass, type == baselineClass { return .tup }
+        return type
     }
 
     var isModelReady: Bool { detector != nil }
@@ -90,6 +122,9 @@ final class PostureManager: ObservableObject {
             self?.stableType = nil
             self?.badSince = nil
             self?.badType = nil
+            self?.calibrating = false
+            self?.calibrationVotes = [:]
+            // baselineClass is kept so calibration survives pause/resume.
         }
         gate.lock(); isProcessing = false; lastInference = .distantPast; gate.unlock()
         publish(posture: nil, confidence: 0, bodyDetected: false, score: 100, dominant: nil, alert: nil)
@@ -138,10 +173,20 @@ final class PostureManager: ObservableObject {
             return
         }
 
-        // Feed confident predictions into the smoothing history, then resolve a
-        // stable posture by majority vote with hysteresis.
+        // During calibration, just tally the raw predictions; don't score/alert.
+        if calibrating {
+            if result.confidence >= minConfidence {
+                calibrationVotes[result.type, default: 0] += 1
+            }
+            publish(posture: .tup, confidence: result.confidence, bodyDetected: true,
+                    score: 100, dominant: nil, alert: nil)
+            return
+        }
+
+        // Feed confident predictions (remapped through the user's baseline) into the
+        // smoothing history, then resolve a stable posture by majority vote.
         if result.confidence >= minConfidence {
-            rawHistory.append(Raw(time: now, type: result.type, confidence: result.confidence))
+            rawHistory.append(Raw(time: now, type: normalized(result.type), confidence: result.confidence))
         }
         pruneRawHistory(now: now)
         stableType = smoothedPosture()

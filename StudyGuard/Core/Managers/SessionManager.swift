@@ -12,6 +12,7 @@ import Combine
 final class SessionManager: ObservableObject {
 
     enum Phase {
+        case calibrating
         case studying
         case paused
         case finished(reason: EndReason)
@@ -74,8 +75,16 @@ final class SessionManager: ObservableObject {
         camera.start()
         posture.connect(to: camera)
         focus.connect(to: camera)
-        observeAlerts()
-        startTimer()
+
+        // Calibrate the user's upright posture before the clock starts.
+        phase = .calibrating
+        posture.calibrate(seconds: 4) { [weak self] in
+            guard let self, case .calibrating = self.phase else { return }
+            self.startedAt = Date()
+            self.observeAlerts()
+            self.startTimer()
+            self.phase = .studying
+        }
     }
 
     /// Pauses the session: camera + detectors + timer stop, but the session is
