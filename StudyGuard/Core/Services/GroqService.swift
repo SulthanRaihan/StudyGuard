@@ -89,7 +89,9 @@ final class GroqService {
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let http = response as? HTTPURLResponse else { throw GroqError.http(-1, "") }
         guard (200..<300).contains(http.statusCode) else {
-            throw GroqError.http(http.statusCode, String(data: data, encoding: .utf8) ?? "")
+            let body = String(data: data, encoding: .utf8) ?? ""
+            print("⚠️ Groq HTTP \(http.statusCode): \(body)")
+            throw GroqError.http(http.statusCode, body)
         }
 
         let decoded = try JSONDecoder().decode(ResponseBody.self, from: data)
