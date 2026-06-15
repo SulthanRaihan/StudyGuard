@@ -14,6 +14,7 @@ struct SessionSummaryView: View {
     @State private var summary: String?
     @State private var summaryError: String?
     @State private var isLoading = true
+    @State private var agentAnalysis: AgentAnalysis?
 
     var body: some View {
         ScrollView {
@@ -36,6 +37,10 @@ struct SessionSummaryView: View {
                 }
 
                 groqCard
+
+                if let agentAnalysis {
+                    coachCard(agentAnalysis)
+                }
 
                 Button("Done", action: onDone)
                     .buttonStyle(.sgPrimary)
@@ -72,6 +77,38 @@ struct SessionSummaryView: View {
         .sgCard()
     }
 
+    private func coachCard(_ analysis: AgentAnalysis) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Label("Coach Analysis", systemImage: "person.2.badge.gearshape.fill")
+                .font(.headline).foregroundStyle(Theme.green)
+
+            Text(analysis.posture.patterns)
+                .font(.callout).foregroundStyle(Theme.navy)
+                .fixedSize(horizontal: false, vertical: true)
+
+            if !analysis.focus.dropMinutes.isEmpty {
+                Text("Focus dipped around minute \(analysis.focus.dropMinutes.prefix(5).map(String.init).joined(separator: ", "))")
+                    .font(.caption).foregroundStyle(Theme.muted)
+            }
+
+            if !analysis.exercises.isEmpty {
+                Divider()
+                Text("Suggested stretches").font(.subheadline.bold()).foregroundStyle(Theme.navy)
+                ForEach(analysis.exercises) { exercise in
+                    HStack(alignment: .top, spacing: 8) {
+                        Image(systemName: "figure.cooldown").foregroundStyle(Theme.orange)
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text(exercise.name).font(.subheadline).foregroundStyle(Theme.navy)
+                            Text(exercise.instructions).font(.caption2).foregroundStyle(Theme.muted)
+                        }
+                    }
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .sgCard()
+    }
+
     private func stat(_ label: String, _ value: String, _ icon: String, _ color: Color) -> some View {
         VStack(spacing: 6) {
             Image(systemName: icon).font(.title3).foregroundStyle(color)
@@ -83,12 +120,16 @@ struct SessionSummaryView: View {
     }
 
     private func loadSummary() async {
+        // Kick off the optional agent analysis in parallel; it only appears if
+        // a backend is configured and reachable.
+        async let agents = AgentService.shared.analyze(result)
         do {
             summary = try await GroqService.shared.sessionSummary(for: result)
         } catch {
             summaryError = error.localizedDescription
         }
         isLoading = false
+        agentAnalysis = await agents
     }
 }
 
