@@ -36,6 +36,7 @@
 		219B08138A3A44AF2C068654 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 797C7024E6E50A0B2FFCE926 /* AppSettings.swift */; };
 		36E3694E47C8F9D78E933AC5 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8528A8B9C3296E08A5263480 /* DashboardView.swift */; };
 		9B9AC8C32C9952E4BA3FA915 /* BadgesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC718344E8788FB8A39AD477 /* BadgesView.swift */; };
+		5AC4A36C907BDFCDF5E9B4A2 /* SessionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3365CAA0A063CAED90AA0A4 /* SessionDetailView.swift */; };
 		D58E174278329799491D7ED3 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFAB0DEC66D643CB49690EC4 /* SettingsView.swift */; };
 		AA5DCB81C37C927E8A8F7539 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E22BCE5D1A8661DE28730E31 /* MainView.swift */; };
 		449AF1AFE2E8D53CA874EF0C /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B5EE283BD514B38F1254144 /* SessionManager.swift */; };
@@ -109,6 +110,7 @@
 		797C7024E6E50A0B2FFCE926 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		8528A8B9C3296E08A5263480 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		AC718344E8788FB8A39AD477 /* BadgesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgesView.swift; sourceTree = "<group>"; };
+		E3365CAA0A063CAED90AA0A4 /* SessionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailView.swift; sourceTree = "<group>"; };
 		BFAB0DEC66D643CB49690EC4 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		E22BCE5D1A8661DE28730E31 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		2B5EE283BD514B38F1254144 /* SessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManager.swift; sourceTree = "<group>"; };
@@ -339,6 +341,7 @@
 			children = (
 				8528A8B9C3296E08A5263480 /* DashboardView.swift */,
 				AC718344E8788FB8A39AD477 /* BadgesView.swift */,
+				E3365CAA0A063CAED90AA0A4 /* SessionDetailView.swift */,
 			);
 			path = Dashboard;
 			sourceTree = "<group>";
@@ -567,6 +570,7 @@
 				219B08138A3A44AF2C068654 /* AppSettings.swift in Sources */,
 				36E3694E47C8F9D78E933AC5 /* DashboardView.swift in Sources */,
 				9B9AC8C32C9952E4BA3FA915 /* BadgesView.swift in Sources */,
+				5AC4A36C907BDFCDF5E9B4A2 /* SessionDetailView.swift in Sources */,
 				D58E174278329799491D7ED3 /* SettingsView.swift in Sources */,
 				AA5DCB81C37C927E8A8F7539 /* MainView.swift in Sources */,
 			);

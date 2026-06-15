@@ -21,6 +21,7 @@ struct DashboardView: View {
                     header
                     tiles
                     weeklyChart
+                    recentSessions
                     subjectBreakdown
                     badgesLink
                     Color.clear.frame(height: 90) // clear the floating nav
@@ -103,6 +104,45 @@ struct DashboardView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .sgCard()
+    }
+
+    private var recentSessions: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Recent Sessions").font(.headline).foregroundStyle(Theme.navy)
+            if sessions.isEmpty {
+                Text("No sessions yet — start studying!")
+                    .font(.callout).foregroundStyle(Theme.muted)
+            } else {
+                ForEach(sessions.prefix(8)) { record in
+                    NavigationLink {
+                        SessionDetailView(record: record)
+                    } label: {
+                        sessionRow(record)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .sgCard()
+    }
+
+    private func sessionRow(_ record: FirebaseService.SessionRecord) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: "book.fill").foregroundStyle(Theme.orange).frame(width: 24)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(record.subject).font(.subheadline.weight(.semibold)).foregroundStyle(Theme.navy)
+                Text(record.endTime.formatted(date: .abbreviated, time: .shortened))
+                    .font(.caption2).foregroundStyle(Theme.muted)
+            }
+            Spacer()
+            VStack(alignment: .trailing, spacing: 2) {
+                Text("\(record.totalSeconds / 60)m").font(.subheadline.weight(.semibold)).foregroundStyle(Theme.navy)
+                Text("Focus \(Int(record.focusScore))%").font(.caption2).foregroundStyle(Theme.muted)
+            }
+            Image(systemName: "chevron.right").font(.caption).foregroundStyle(Theme.muted)
+        }
+        .padding(.vertical, 6)
     }
 
     private var badgesLink: some View {

@@ -23,7 +23,7 @@ final class FirebaseService {
         var level: StudyLevel { StudyLevel.level(forXP: totalXP) }
     }
 
-    /// A past session, for the dashboard and badges.
+    /// A past session, for the dashboard, history, and badges.
     struct SessionRecord: Identifiable {
         let id: String
         let subject: String
@@ -31,6 +31,9 @@ final class FirebaseService {
         let focusScore: Double
         let postureScore: Double
         let totalSeconds: Int
+        let distractionCount: Int
+        let postureAlertCount: Int
+        let focusTimeline: [Int]
     }
 
     /// Recent sessions, newest first. Filters by `userId` only (no composite index
@@ -44,13 +47,18 @@ final class FirebaseService {
         return snapshot.documents.compactMap { doc -> SessionRecord? in
             let data = doc.data()
             guard let end = (data["endTime"] as? Timestamp)?.dateValue() else { return nil }
+            let timeline = (data["focusTimeline"] as? [NSNumber])?.map(\.intValue)
+                ?? (data["focusTimeline"] as? [Int]) ?? []
             return SessionRecord(
                 id: doc.documentID,
                 subject: data["subject"] as? String ?? "",
                 endTime: end,
                 focusScore: data["focusScore"] as? Double ?? 0,
                 postureScore: data["postureScore"] as? Double ?? 0,
-                totalSeconds: data["totalDuration"] as? Int ?? 0
+                totalSeconds: data["totalDuration"] as? Int ?? 0,
+                distractionCount: data["distractionCount"] as? Int ?? 0,
+                postureAlertCount: data["postureAlertCount"] as? Int ?? 0,
+                focusTimeline: timeline
             )
         }
         .sorted { $0.endTime > $1.endTime }
@@ -96,6 +104,7 @@ final class FirebaseService {
                        focusScore: Double,
                        postureAlertCount: Int,
                        distractionCount: Int = 0,
+                       focusTimeline: [Int] = [],
                        status: String) async throws -> Int {
 
         let userRef = db.collection("users").document(userId)
@@ -143,6 +152,7 @@ final class FirebaseService {
             "postureScore": postureScore,
             "distractionCount": distractionCount,
             "postureAlertCount": postureAlertCount,
+            "focusTimeline": focusTimeline,
             "xpEarned": xpEarned,
             "status": status
         ]
