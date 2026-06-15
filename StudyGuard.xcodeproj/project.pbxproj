@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		05B39AD61D8377C74113F05C /* BreakExercise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54B4CD4745E9B85968858E35 /* BreakExercise.swift */; };
+		12A26B166B7B4F4B50F76BB0 /* StudySession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F437C8ADD353EE04FE086F8 /* StudySession.swift */; };
+		24FC58C6476EFFC026D22947 /* FocusSample.swift in Sources */ = {isa = PBXBuildFile; fileRef = C44042E43714C4527CE79F26 /* FocusSample.swift */; };
+		25CAAC6413061F9A66B823DD /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7498A904BD8E95F4849CAA72 /* CameraManager.swift */; };
+		714B4D1E1731FE700C733738 /* PostureDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7ACCF193878B39810B88AAA2 /* PostureDetector.swift */; };
+		90894B41219019886F59FEBF /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD3E8F4C1A3BBBE0F8F6467A /* User.swift */; };
+		D2B8D537E88A17B00E74B98A /* PostureEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55B677CC2BD5120BA4D98B6 /* PostureEvent.swift */; };
 		EB7CDA2A2FDC265200DE8E7E /* StudyGuardApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7CDA292FDC265200DE8E7E /* StudyGuardApp.swift */; };
 		EB7CDA2C2FDC265200DE8E7E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7CDA2B2FDC265200DE8E7E /* ContentView.swift */; };
 		EB7CDA2E2FDC265400DE8E7E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EB7CDA2D2FDC265400DE8E7E /* Assets.xcassets */; };
@@ -14,6 +21,13 @@
 		EB7CDA3B2FDC265400DE8E7E /* StudyGuardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7CDA3A2FDC265400DE8E7E /* StudyGuardTests.swift */; };
 		EB7CDA452FDC265400DE8E7E /* StudyGuardUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7CDA442FDC265400DE8E7E /* StudyGuardUITests.swift */; };
 		EB7CDA472FDC265400DE8E7E /* StudyGuardUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7CDA462FDC265400DE8E7E /* StudyGuardUITestsLaunchTests.swift */; };
+		EB7CDA552FDC2C0800DE8E7E /* PostureClassifier.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = EB7CDA542FDC2C0700DE8E7E /* PostureClassifier.mlmodel */; };
+		EB7CDA572FDC3A4900DE8E7E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = EB7CDA562FDC3A4800DE8E7E /* GoogleService-Info.plist */; };
+		EB7CDA5A2FDC3B3500DE8E7E /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = EB7CDA592FDC3B3500DE8E7E /* FirebaseAuth */; };
+		EB7CDA5C2FDC3B3500DE8E7E /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = EB7CDA5B2FDC3B3500DE8E7E /* FirebaseFirestore */; };
+		EB7CDA5F2FDC3B8000DE8E7E /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = EB7CDA5E2FDC3B8000DE8E7E /* GoogleSignIn */; };
+		EB7CDA612FDC3B8000DE8E7E /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = EB7CDA602FDC3B8000DE8E7E /* GoogleSignInSwift */; };
+		F80F55EA67572ED28171ACCD /* FocusEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417E456639E0067855E42D2A /* FocusEvent.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,6 +48,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0F437C8ADD353EE04FE086F8 /* StudySession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudySession.swift; sourceTree = "<group>"; };
+		417E456639E0067855E42D2A /* FocusEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusEvent.swift; sourceTree = "<group>"; };
+		54B4CD4745E9B85968858E35 /* BreakExercise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreakExercise.swift; sourceTree = "<group>"; };
+		7498A904BD8E95F4849CAA72 /* CameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
+		7ACCF193878B39810B88AAA2 /* PostureDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostureDetector.swift; sourceTree = "<group>"; };
+		BD3E8F4C1A3BBBE0F8F6467A /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		C44042E43714C4527CE79F26 /* FocusSample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusSample.swift; sourceTree = "<group>"; };
+		E55B677CC2BD5120BA4D98B6 /* PostureEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostureEvent.swift; sourceTree = "<group>"; };
 		EB7CDA262FDC265200DE8E7E /* StudyGuard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StudyGuard.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB7CDA292FDC265200DE8E7E /* StudyGuardApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyGuardApp.swift; sourceTree = "<group>"; };
 		EB7CDA2B2FDC265200DE8E7E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -44,6 +66,8 @@
 		EB7CDA402FDC265400DE8E7E /* StudyGuardUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StudyGuardUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB7CDA442FDC265400DE8E7E /* StudyGuardUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyGuardUITests.swift; sourceTree = "<group>"; };
 		EB7CDA462FDC265400DE8E7E /* StudyGuardUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyGuardUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		EB7CDA542FDC2C0700DE8E7E /* PostureClassifier.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = PostureClassifier.mlmodel; sourceTree = "<group>"; };
+		EB7CDA562FDC3A4800DE8E7E /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,6 +75,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EB7CDA5A2FDC3B3500DE8E7E /* FirebaseAuth in Frameworks */,
+				EB7CDA5C2FDC3B3500DE8E7E /* FirebaseFirestore in Frameworks */,
+				EB7CDA5F2FDC3B8000DE8E7E /* GoogleSignIn in Frameworks */,
+				EB7CDA612FDC3B8000DE8E7E /* GoogleSignInSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,9 +99,33 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		081C7D47D0DBA71E4A1A2CAF /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				BD3E8F4C1A3BBBE0F8F6467A /* User.swift */,
+				0F437C8ADD353EE04FE086F8 /* StudySession.swift */,
+				E55B677CC2BD5120BA4D98B6 /* PostureEvent.swift */,
+				417E456639E0067855E42D2A /* FocusEvent.swift */,
+				C44042E43714C4527CE79F26 /* FocusSample.swift */,
+				54B4CD4745E9B85968858E35 /* BreakExercise.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		C96A1B6281A8E757BD4D3BFC /* Vision */ = {
+			isa = PBXGroup;
+			children = (
+				7498A904BD8E95F4849CAA72 /* CameraManager.swift */,
+				7ACCF193878B39810B88AAA2 /* PostureDetector.swift */,
+			);
+			path = Vision;
+			sourceTree = "<group>";
+		};
 		EB7CDA1D2FDC265100DE8E7E = {
 			isa = PBXGroup;
 			children = (
+				EB7CDA562FDC3A4800DE8E7E /* GoogleService-Info.plist */,
+				EB7CDA532FDC2C0700DE8E7E /* ML */,
 				EB7CDA282FDC265200DE8E7E /* StudyGuard */,
 				EB7CDA392FDC265400DE8E7E /* StudyGuardTests */,
 				EB7CDA432FDC265400DE8E7E /* StudyGuardUITests */,
@@ -96,6 +148,8 @@
 			children = (
 				EB7CDA292FDC265200DE8E7E /* StudyGuardApp.swift */,
 				EB7CDA2B2FDC265200DE8E7E /* ContentView.swift */,
+				FE9422A027A0496895788CFC /* Core */,
+				C96A1B6281A8E757BD4D3BFC /* Vision */,
 				EB7CDA2D2FDC265400DE8E7E /* Assets.xcassets */,
 				EB7CDA2F2FDC265400DE8E7E /* Preview Content */,
 			);
@@ -127,6 +181,22 @@
 			path = StudyGuardUITests;
 			sourceTree = "<group>";
 		};
+		EB7CDA532FDC2C0700DE8E7E /* ML */ = {
+			isa = PBXGroup;
+			children = (
+				EB7CDA542FDC2C0700DE8E7E /* PostureClassifier.mlmodel */,
+			);
+			path = ML;
+			sourceTree = "<group>";
+		};
+		FE9422A027A0496895788CFC /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				081C7D47D0DBA71E4A1A2CAF /* Models */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -143,6 +213,12 @@
 			dependencies = (
 			);
 			name = StudyGuard;
+			packageProductDependencies = (
+				EB7CDA592FDC3B3500DE8E7E /* FirebaseAuth */,
+				EB7CDA5B2FDC3B3500DE8E7E /* FirebaseFirestore */,
+				EB7CDA5E2FDC3B8000DE8E7E /* GoogleSignIn */,
+				EB7CDA602FDC3B8000DE8E7E /* GoogleSignInSwift */,
+			);
 			productName = StudyGuard;
 			productReference = EB7CDA262FDC265200DE8E7E /* StudyGuard.app */;
 			productType = "com.apple.product-type.application";
@@ -215,6 +291,10 @@
 				Base,
 			);
 			mainGroup = EB7CDA1D2FDC265100DE8E7E;
+			packageReferences = (
+				EB7CDA582FDC3B3500DE8E7E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				EB7CDA5D2FDC3B8000DE8E7E /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+			);
 			productRefGroup = EB7CDA272FDC265200DE8E7E /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -231,6 +311,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EB7CDA572FDC3A4900DE8E7E /* GoogleService-Info.plist in Resources */,
 				EB7CDA312FDC265400DE8E7E /* Preview Assets.xcassets in Resources */,
 				EB7CDA2E2FDC265400DE8E7E /* Assets.xcassets in Resources */,
 			);
@@ -259,6 +340,15 @@
 			files = (
 				EB7CDA2C2FDC265200DE8E7E /* ContentView.swift in Sources */,
 				EB7CDA2A2FDC265200DE8E7E /* StudyGuardApp.swift in Sources */,
+				EB7CDA552FDC2C0800DE8E7E /* PostureClassifier.mlmodel in Sources */,
+				90894B41219019886F59FEBF /* User.swift in Sources */,
+				12A26B166B7B4F4B50F76BB0 /* StudySession.swift in Sources */,
+				D2B8D537E88A17B00E74B98A /* PostureEvent.swift in Sources */,
+				F80F55EA67572ED28171ACCD /* FocusEvent.swift in Sources */,
+				24FC58C6476EFFC026D22947 /* FocusSample.swift in Sources */,
+				05B39AD61D8377C74113F05C /* BreakExercise.swift in Sources */,
+				25CAAC6413061F9A66B823DD /* CameraManager.swift in Sources */,
+				714B4D1E1731FE700C733738 /* PostureDetector.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -577,6 +667,48 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		EB7CDA582FDC3B3500DE8E7E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = exactVersion;
+				version = 10.18.0;
+			};
+		};
+		EB7CDA5D2FDC3B8000DE8E7E /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		EB7CDA592FDC3B3500DE8E7E /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EB7CDA582FDC3B3500DE8E7E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		EB7CDA5B2FDC3B3500DE8E7E /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EB7CDA582FDC3B3500DE8E7E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		EB7CDA5E2FDC3B8000DE8E7E /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EB7CDA5D2FDC3B8000DE8E7E /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+		EB7CDA602FDC3B8000DE8E7E /* GoogleSignInSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EB7CDA5D2FDC3B8000DE8E7E /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignInSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = EB7CDA1E2FDC265100DE8E7E /* Project object */;
 }
