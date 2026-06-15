@@ -13,10 +13,7 @@ struct ExerciseCardView: View {
 
     var body: some View {
         HStack(spacing: 14) {
-            Image(systemName: icon)
-                .font(.title2)
-                .foregroundStyle(.tint)
-                .frame(width: 40)
+            thumbnail
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(exercise.name)
@@ -44,6 +41,21 @@ struct ExerciseCardView: View {
         .padding(16)
         .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 16))
         .opacity(isDone ? 0.6 : 1)
+    }
+
+    @ViewBuilder
+    private var thumbnail: some View {
+        if let gif = exercise.gifUrl, let url = URL(string: gif) {
+            AnimatedGIFView(url: url)
+                .frame(width: 64, height: 64)
+                .background(Color.white)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+        } else {
+            Image(systemName: icon)
+                .font(.title2)
+                .foregroundStyle(.tint)
+                .frame(width: 64, height: 64)
+        }
     }
 
     private var icon: String {
