@@ -22,7 +22,7 @@ struct BreakChatView: View {
                     ScrollView {
                         LazyVStack(alignment: .leading, spacing: 12) {
                             if messages.isEmpty {
-                                Text("Tanya apa saja tentang \(subject) selama istirahat. 🤓")
+                                Text("Ask me anything about \(subject) during your break. 🤓")
                                     .font(.callout)
                                     .foregroundStyle(.secondary)
                                     .frame(maxWidth: .infinity, alignment: .center)
@@ -51,11 +51,11 @@ struct BreakChatView: View {
 
                 inputBar
             }
-            .navigationTitle("Tanya AI")
+            .navigationTitle("Ask Guri")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Tutup") { dismiss() }
+                    Button("Close") { dismiss() }
                 }
             }
         }
@@ -77,7 +77,7 @@ struct BreakChatView: View {
 
     private var inputBar: some View {
         HStack(spacing: 10) {
-            TextField("Tulis pertanyaan…", text: $input, axis: .vertical)
+            TextField("Type a question…", text: $input, axis: .vertical)
                 .textFieldStyle(.roundedBorder)
                 .lineLimit(1...4)
             Button {

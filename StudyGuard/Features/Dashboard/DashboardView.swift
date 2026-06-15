@@ -35,18 +35,18 @@ struct DashboardView: View {
 
     private var header: some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text("Statistik")
+            Text("Statistics")
                 .font(.subheadline).foregroundStyle(Theme.muted)
-            Text("Ringkasan Belajar")
+            Text("Learning Overview")
                 .font(.largeTitle.bold()).foregroundStyle(Theme.navy)
         }
     }
 
     private var tiles: some View {
         HStack(spacing: 12) {
-            tile("\(sessions.count)", "Sesi", "calendar", Theme.navy)
-            tile("\(avg(\.focusScore))%", "Fokus", "eye.fill", Theme.orange)
-            tile("\(avg(\.postureScore))%", "Postur", "figure.stand", Theme.green)
+            tile("\(sessions.count)", "Sessions", "calendar", Theme.navy)
+            tile("\(avg(\.focusScore))%", "Focus", "eye.fill", Theme.orange)
+            tile("\(avg(\.postureScore))%", "Posture", "figure.stand", Theme.green)
         }
     }
 
@@ -63,9 +63,9 @@ struct DashboardView: View {
 
     private var weeklyChart: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Fokus 7 Hari Terakhir").font(.headline).foregroundStyle(Theme.navy)
+            Text("Focus — Last 7 Days").font(.headline).foregroundStyle(Theme.navy)
             if weeklyData.allSatisfy({ $0.focus == 0 }) {
-                Text("Belum ada data sesi minggu ini.")
+                Text("No session data this week yet.")
                     .font(.callout).foregroundStyle(Theme.muted)
                     .frame(maxWidth: .infinity, minHeight: 120)
             } else {
@@ -87,15 +87,15 @@ struct DashboardView: View {
 
     private var subjectBreakdown: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Per Mata Pelajaran").font(.headline).foregroundStyle(Theme.navy)
+            Text("By Subject").font(.headline).foregroundStyle(Theme.navy)
             if subjectCounts.isEmpty {
-                Text("Belum ada sesi.").font(.callout).foregroundStyle(Theme.muted)
+                Text("No sessions yet.").font(.callout).foregroundStyle(Theme.muted)
             } else {
                 ForEach(subjectCounts, id: \.subject) { item in
                     HStack {
                         Text(item.subject).foregroundStyle(Theme.navy)
                         Spacer()
-                        Text("\(item.count) sesi").font(.subheadline).foregroundStyle(Theme.muted)
+                        Text("\(item.count) sessions").font(.subheadline).foregroundStyle(Theme.muted)
                     }
                     .padding(.vertical, 2)
                 }
@@ -111,7 +111,7 @@ struct DashboardView: View {
         } label: {
             HStack {
                 Image(systemName: "rosette").foregroundStyle(Theme.orange)
-                Text("Lihat Lencana").foregroundStyle(Theme.navy).font(.headline)
+                Text("View Badges").foregroundStyle(Theme.navy).font(.headline)
                 Spacer()
                 Image(systemName: "chevron.right").foregroundStyle(Theme.muted)
             }
@@ -129,7 +129,7 @@ struct DashboardView: View {
 
     private var weeklyData: [DayFocus] {
         let calendar = Calendar.current
-        let symbols = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"]
+        let symbols = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
         return (0..<7).reversed().map { offset -> DayFocus in
             let date = calendar.date(byAdding: .day, value: -offset, to: Date()) ?? Date()
             let weekday = calendar.component(.weekday, from: date) - 1

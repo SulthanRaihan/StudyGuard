@@ -22,41 +22,43 @@ final class GroqService {
 
     enum GroqError: LocalizedError {
         case missingKey
-        case http(Int)
+        case http(Int, String)
         case empty
 
         var errorDescription: String? {
             switch self {
-            case .missingKey: return "Groq API key tidak ditemukan di Secrets.plist."
-            case .http(let code): return "Groq API error (HTTP \(code))."
-            case .empty: return "Groq tidak mengembalikan jawaban."
+            case .missingKey: return "Groq API key not found in Secrets.plist."
+            case .http(let code, let body):
+                let detail = body.isEmpty ? "" : " — \(body.prefix(200))"
+                return "Groq API error (HTTP \(code))\(detail)"
+            case .empty: return "Groq returned no answer."
             }
         }
     }
 
     private let endpoint = URL(string: "https://api.groq.com/openai/v1/chat/completions")!
-    private let model = "llama3-70b-8192"
+    private let model = "llama-3.3-70b-versatile"
 
     // MARK: - Public use cases
 
     /// One-shot personal session summary (called once at session end).
     func sessionSummary(for result: SessionResult) async throws -> String {
-        let issue = result.dominantIssue?.rawValue ?? "tidak ada"
+        let issue = result.dominantIssue?.rawValue ?? "none"
         let prompt = """
-        Analisis sesi belajar ini dan buat summary yang personal dan conversational.
+        Analyze this study session and write a personal, conversational summary.
 
         Subject: \(result.subject)
-        Durasi: \(result.durationMinutes) menit
+        Duration: \(result.durationMinutes) minutes
         Posture score: \(Int(result.avgPosture))%
         Focus score: \(Int(result.avgFocus))%
         Dominant posture issue: \(issue)
-        Alert count: \(result.postureAlertCount) kali
+        Alert count: \(result.postureAlertCount)
 
-        Focus timeline (skor per menit):
+        Focus timeline (score per minute):
         \(result.focusTimelineString)
 
-        Buat summary personal maksimal 150 kata dalam bahasa Indonesia.
-        Sebutkan kapan fokus drop (jika ada) dan berikan 2 saran konkret untuk sesi berikutnya.
+        Write a personal summary in English, max 150 words.
+        Mention when focus dropped (if any) and give 2 concrete tips for the next session.
         """
         return try await complete(messages: [Message(role: "user", content: prompt)], maxTokens: 400)
     }
@@ -64,10 +66,9 @@ final class GroqService {
     /// Break chat: answers a study question, given the running conversation.
     func breakChat(subject: String, history: [Message]) async throws -> String {
         let system = Message(role: "system", content: """
-        Kamu adalah asisten belajar yang membantu mahasiswa memahami materi kuliah.
-        User sedang break dari sesi belajar \(subject).
-        Jawab pertanyaan dengan singkat, jelas, dan mudah dipahami.
-        Gunakan bahasa Indonesia. Maksimal 100 kata per jawaban.
+        You are a study assistant helping a student understand their coursework.
+        The user is on a break from studying \(subject).
+        Answer briefly, clearly, and in plain language. Use English. Max 100 words per answer.
         """)
         return try await complete(messages: [system] + history, maxTokens: 300)
     }
@@ -86,8 +87,10 @@ final class GroqService {
         )
 
         let (data, response) = try await URLSession.shared.data(for: request)
-        guard let http = response as? HTTPURLResponse else { throw GroqError.http(-1) }
-        guard (200..<300).contains(http.statusCode) else { throw GroqError.http(http.statusCode) }
+        guard let http = response as? HTTPURLResponse else { throw GroqError.http(-1, "") }
+        guard (200..<300).contains(http.statusCode) else {
+            throw GroqError.http(http.statusCode, String(data: data, encoding: .utf8) ?? "")
+        }
 
         let decoded = try JSONDecoder().decode(ResponseBody.self, from: data)
         guard let content = decoded.choices.first?.message.content, !content.isEmpty else {

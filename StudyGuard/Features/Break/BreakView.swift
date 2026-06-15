@@ -5,10 +5,12 @@
 
 import SwiftUI
 
-/// Break screen: camera is off, the user does matched stretches with a countdown,
-/// and can open a quick AI chat. Finishing returns to Home.
+/// Break screen: camera is off, Guri keeps the user company with matched stretches,
+/// a countdown, and a quick AI chat. Opened mid-session from the pause menu.
 struct BreakView: View {
     let result: SessionResult
+    /// `true` when opened from a paused session (button reads "Resume Studying").
+    var isMidSession: Bool = false
     let onDone: () -> Void
 
     @State private var exercises: [BreakExercise] = []
@@ -17,8 +19,9 @@ struct BreakView: View {
     @State private var showChat = false
     @State private var timer: Timer?
 
-    init(result: SessionResult, onDone: @escaping () -> Void) {
+    init(result: SessionResult, isMidSession: Bool = false, onDone: @escaping () -> Void) {
         self.result = result
+        self.isMidSession = isMidSession
         self.onDone = onDone
         _remaining = State(initialValue: result.breakMinutes * 60)
     }
@@ -26,11 +29,11 @@ struct BreakView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 22) {
+                guriHeader
                 countdown
 
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Peregangan untukmu")
-                        .font(.headline)
+                    Text("Stretches for you").font(.headline).foregroundStyle(Theme.navy)
                     ForEach(exercises) { exercise in
                         ExerciseCardView(exercise: exercise, isDone: doneIDs.contains(exercise.id)) {
                             toggle(exercise)
@@ -38,21 +41,19 @@ struct BreakView: View {
                     }
                 }
 
-                Button {
-                    showChat = true
-                } label: {
-                    Label("Tanya AI", systemImage: "bubble.left.and.bubble.right.fill")
-                        .frame(maxWidth: .infinity).padding(.vertical, 6)
+                Button { showChat = true } label: {
+                    Label("Ask Guri (AI)", systemImage: "bubble.left.and.bubble.right.fill")
                 }
-                .buttonStyle(.bordered)
-                .controlSize(.large)
+                .buttonStyle(.sgSecondary)
 
-                Button("Selesai Istirahat", action: finish)
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.large)
+                Button(isMidSession ? "Resume Studying" : "Done", action: finish)
+                    .buttonStyle(.sgPrimary)
+
+                Color.clear.frame(height: 8)
             }
             .padding(24)
         }
+        .background(Theme.cream.ignoresSafeArea())
         .task { await loadExercises() }
         .onAppear(perform: startTimer)
         .onDisappear { timer?.invalidate() }
@@ -61,21 +62,32 @@ struct BreakView: View {
         }
     }
 
+    private var guriHeader: some View {
+        VStack(spacing: 8) {
+            BrandImage(name: "GuriBreak", fallbackSystemName: "cup.and.saucer.fill")
+                .frame(height: 130)
+            Text("Break time!")
+                .font(.title2.bold()).foregroundStyle(Theme.navy)
+            Text("Rest your eyes and stretch — your brain will thank you.")
+                .font(.subheadline).foregroundStyle(Theme.muted)
+                .multilineTextAlignment(.center)
+        }
+        .padding(.top, 8)
+    }
+
     private var countdown: some View {
-        VStack(spacing: 6) {
-            Text("Waktu istirahat")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+        VStack(spacing: 4) {
+            Text("Break timer").font(.caption).foregroundStyle(Theme.muted)
             Text(timeString)
-                .font(.system(size: 52, weight: .bold, design: .rounded).monospacedDigit())
-                .foregroundStyle(remaining == 0 ? .green : .primary)
+                .font(.system(size: 44, weight: .bold, design: .rounded).monospacedDigit())
+                .foregroundStyle(remaining == 0 ? Theme.green : Theme.navy)
             if remaining == 0 {
-                Text("Istirahat selesai — siap lanjut belajar!")
-                    .font(.caption)
-                    .foregroundStyle(.green)
+                Text("Break's over — ready to get back to it!")
+                    .font(.caption).foregroundStyle(Theme.green)
             }
         }
-        .padding(.top, 12)
+        .frame(maxWidth: .infinity)
+        .sgCard()
     }
 
     private var timeString: String {
@@ -83,11 +95,8 @@ struct BreakView: View {
     }
 
     private func toggle(_ exercise: BreakExercise) {
-        if doneIDs.contains(exercise.id) {
-            doneIDs.remove(exercise.id)
-        } else {
-            doneIDs.insert(exercise.id)
-        }
+        if doneIDs.contains(exercise.id) { doneIDs.remove(exercise.id) }
+        else { doneIDs.insert(exercise.id) }
     }
 
     private func loadExercises() async {
@@ -113,7 +122,7 @@ struct BreakView: View {
 struct BreakView_Previews: PreviewProvider {
     static var previews: some View {
         BreakView(
-            result: SessionResult(subject: "Fisika", totalSeconds: 1500, targetMinutes: 25,
+            result: SessionResult(subject: "Physics", totalSeconds: 1500, targetMinutes: 25,
                                   avgPosture: 80, avgFocus: 70, postureAlertCount: 2,
                                   dominantIssue: .tll, focusTimeline: [80, 75], startedAt: Date()),
             onDone: {}

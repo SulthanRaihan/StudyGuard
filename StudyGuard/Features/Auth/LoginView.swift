@@ -25,7 +25,7 @@ struct LoginView: View {
                 VStack(spacing: 10) {
                     BrandImage(name: "GuriLogo", fallbackSystemName: "graduationcap.fill")
                         .frame(height: 130)
-                    Text("Selamat datang kembali")
+                    Text("Welcome back")
                         .font(.subheadline)
                         .foregroundStyle(Theme.muted)
                 }
@@ -38,7 +38,7 @@ struct LoginView: View {
                         .autocorrectionDisabled()
                         .textFieldStyle(.roundedBorder)
 
-                    SecureField("Kata sandi", text: $password)
+                    SecureField("Password", text: $password)
                         .textContentType(.password)
                         .textFieldStyle(.roundedBorder)
 
@@ -56,13 +56,13 @@ struct LoginView: View {
                     if auth.isBusy {
                         ProgressView().tint(.white)
                     } else {
-                        Text("Masuk")
+                        Text("Sign In")
                     }
                 }
                 .buttonStyle(.sgPrimary)
                 .disabled(!canSubmit)
 
-                Button("Belum punya akun? Daftar", action: onRegister)
+                Button("Don't have an account? Sign Up", action: onRegister)
                     .font(.subheadline)
                     .foregroundStyle(Theme.orange)
 

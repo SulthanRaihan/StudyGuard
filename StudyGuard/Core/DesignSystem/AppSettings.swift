@@ -18,7 +18,7 @@ enum AppSettingsStore {
         AlertSensitivity(rawValue: UserDefaults.standard.string(forKey: sensitivityKey) ?? "medium") ?? .medium
     }
     static var voiceLanguage: String {
-        UserDefaults.standard.string(forKey: voiceLanguageKey) ?? "id-ID"
+        UserDefaults.standard.string(forKey: voiceLanguageKey) ?? "en-US"
     }
     static var voiceEnabled: Bool {
         UserDefaults.standard.object(forKey: voiceEnabledKey) as? Bool ?? true

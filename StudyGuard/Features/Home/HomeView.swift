@@ -35,7 +35,7 @@ struct HomeView: View {
                 .frame(width: 52, height: 52)
             VStack(alignment: .leading, spacing: 2) {
                 Text(greeting).font(.subheadline).foregroundStyle(Theme.muted)
-                Text(profile?.name ?? auth.displayName ?? "Pelajar")
+                Text(profile?.name ?? auth.displayName ?? "Learner")
                     .font(.title.bold()).foregroundStyle(Theme.navy)
             }
             Spacer()
@@ -47,9 +47,9 @@ struct HomeView: View {
             BrandImage(name: "GuriCelebrate", fallbackSystemName: "sparkles")
                 .frame(width: 56, height: 56)
             VStack(alignment: .leading, spacing: 4) {
-                Text("Teman belajarmu, Guri 🐱")
+                Text("Your study buddy, Guri 🐱")
                     .font(.caption).foregroundStyle(Theme.muted)
-                Text("Ayo jaga postur & fokus hari ini!")
+                Text("Let's keep your posture & focus sharp today!")
                     .font(.headline).foregroundStyle(Theme.navy)
             }
             Spacer()
@@ -62,7 +62,7 @@ struct HomeView: View {
     private var statsRow: some View {
         HStack(spacing: 12) {
             statCard(icon: "flame.fill", color: Theme.orange,
-                     value: "\(profile?.currentStreak ?? 0)", label: "Hari beruntun")
+                     value: "\(profile?.currentStreak ?? 0)", label: "Day streak")
             statCard(icon: "star.fill", color: .yellow,
                      value: "\(profile?.totalXP ?? 0)", label: "Total XP")
         }
@@ -83,7 +83,7 @@ struct HomeView: View {
         HStack(spacing: 14) {
             Image(systemName: "graduationcap.fill").font(.title).foregroundStyle(Theme.orange)
             VStack(alignment: .leading, spacing: 2) {
-                Text("Level belajar").font(.caption).foregroundStyle(Theme.muted)
+                Text("Study level").font(.caption).foregroundStyle(Theme.muted)
                 Text((profile?.level ?? .beginner).rawValue)
                     .font(.title3.bold()).foregroundStyle(Theme.navy)
             }
@@ -95,17 +95,17 @@ struct HomeView: View {
 
     private var startButton: some View {
         Button(action: onStart) {
-            Label("Mulai Sesi Belajar", systemImage: "play.fill")
+            Label("Start Study Session", systemImage: "play.fill")
         }
         .buttonStyle(.sgPrimary)
     }
 
     private var greeting: String {
         switch Calendar.current.component(.hour, from: Date()) {
-        case 4..<11: return "Selamat pagi,"
-        case 11..<15: return "Selamat siang,"
-        case 15..<19: return "Selamat sore,"
-        default: return "Selamat malam,"
+        case 4..<11: return "Good morning,"
+        case 11..<15: return "Good afternoon,"
+        case 15..<19: return "Good evening,"
+        default: return "Good night,"
         }
     }
 

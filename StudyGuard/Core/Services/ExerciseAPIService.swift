@@ -94,33 +94,33 @@ final class ExerciseAPIService {
     // MARK: - Local fallback
 
     private var eyeRest: BreakExercise {
-        BreakExercise(id: "eye-20-20-20", name: "Istirahat mata (20-20-20)",
+        BreakExercise(id: "eye-20-20-20", name: "Eye rest (20-20-20)",
                       duration: 20, targetArea: .eyes,
-                      instructions: "Lihat objek sejauh ~6 meter selama 20 detik.")
+                      instructions: "Look at something ~6 meters away for 20 seconds.")
     }
 
     private func localExercises(for issue: PostureType?) -> [BreakExercise] {
         switch issue {
         case .tlf, .tlb:
             return [
-                make("Peregangan punggung atas", 30, .back,
-                     "Tautkan jari di depan dada, dorong ke depan, lengkungkan punggung atas."),
-                make("Putar bahu ke belakang", 20, .back,
-                     "Putar kedua bahu perlahan ke belakang 10 kali.")
+                make("Upper back stretch", 30, .back,
+                     "Clasp your hands in front of your chest, push forward, and round your upper back."),
+                make("Shoulder rolls", 20, .back,
+                     "Slowly roll both shoulders backward 10 times.")
             ]
         case .tlr, .tll:
             return [
-                make("Tekuk leher ke samping", 20, .neck,
-                     "Miringkan kepala ke kanan lalu kiri, tahan 10 detik tiap sisi."),
-                make("Angkat & turunkan bahu", 20, .neck,
-                     "Angkat kedua bahu ke arah telinga, tahan, lalu lepas. Ulangi 10 kali.")
+                make("Side neck stretch", 20, .neck,
+                     "Tilt your head right then left, holding 10 seconds each side."),
+                make("Shoulder shrugs", 20, .neck,
+                     "Raise both shoulders toward your ears, hold, then release. Repeat 10 times.")
             ]
         default:
             return [
-                make("Berdiri & regangkan tubuh", 30, .fullBody,
-                     "Berdiri, angkat tangan ke atas, regangkan seluruh tubuh."),
-                make("Putar leher perlahan", 20, .neck,
-                     "Putar kepala perlahan searah dan berlawanan jarum jam.")
+                make("Stand & stretch", 30, .fullBody,
+                     "Stand up, reach your arms overhead, and stretch your whole body."),
+                make("Slow neck rolls", 20, .neck,
+                     "Slowly roll your head clockwise and counter-clockwise.")
             ]
         }
     }

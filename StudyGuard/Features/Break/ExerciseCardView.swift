@@ -24,7 +24,7 @@ struct ExerciseCardView: View {
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
-                Text("\(exercise.duration) detik")
+                Text("\(exercise.duration) seconds")
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(.tint)
             }

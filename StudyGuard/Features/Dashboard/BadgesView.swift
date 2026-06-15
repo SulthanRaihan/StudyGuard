@@ -19,7 +19,7 @@ struct BadgesView: View {
                 BrandImage(name: "GuriCelebrate", fallbackSystemName: "rosette")
                     .frame(height: 120)
 
-                Text("\(unlockedCount) dari \(badges.count) lencana terbuka")
+                Text("\(unlockedCount) of \(badges.count) badges unlocked")
                     .font(.headline).foregroundStyle(Theme.navy)
 
                 LazyVGrid(columns: columns, spacing: 14) {
@@ -31,7 +31,7 @@ struct BadgesView: View {
             .padding(20)
         }
         .background(Theme.cream.ignoresSafeArea())
-        .navigationTitle("Lencana")
+        .navigationTitle("Badges")
         .navigationBarTitleDisplayMode(.inline)
     }
 
@@ -77,24 +77,24 @@ struct BadgesView: View {
     private var badges: [Badge] {
         let count = sessions.count
         let hour: (Date) -> Int = { Calendar.current.component(.hour, from: $0) }
-        let mathCount = sessions.filter { $0.subject == "Matematika" }.count
+        let mathCount = sessions.filter { $0.subject == "Mathematics" }.count
 
         return [
-            Badge(name: "Sesi Pertama", detail: "Selesaikan 1 sesi", icon: "star.fill",
+            Badge(name: "First Session", detail: "Complete 1 session", icon: "star.fill",
                   unlocked: count >= 1),
-            Badge(name: "Postur Sempurna", detail: "Skor postur ≥ 95", icon: "figure.stand",
+            Badge(name: "Posture Perfect", detail: "Posture score ≥ 95", icon: "figure.stand",
                   unlocked: sessions.contains { $0.postureScore >= 95 }),
-            Badge(name: "Fokus Mendalam", detail: "60 menit fokus tinggi", icon: "brain.head.profile",
+            Badge(name: "Deep Focus", detail: "60 min of high focus", icon: "brain.head.profile",
                   unlocked: sessions.contains { $0.totalSeconds >= 3600 && $0.focusScore >= 80 }),
-            Badge(name: "7 Hari Beruntun", detail: "Belajar 7 hari", icon: "flame.fill",
+            Badge(name: "7-Day Streak", detail: "Study 7 days in a row", icon: "flame.fill",
                   unlocked: currentStreak >= 7),
-            Badge(name: "Si Pagi", detail: "Mulai sebelum jam 8", icon: "sunrise.fill",
+            Badge(name: "Early Bird", detail: "Start before 8 AM", icon: "sunrise.fill",
                   unlocked: sessions.contains { hour($0.endTime) < 8 }),
-            Badge(name: "Si Malam", detail: "Belajar setelah jam 10 malam", icon: "moon.stars.fill",
+            Badge(name: "Night Owl", detail: "Study after 10 PM", icon: "moon.stars.fill",
                   unlocked: sessions.contains { hour($0.endTime) >= 22 }),
-            Badge(name: "Ahli Matematika", detail: "10 sesi Matematika", icon: "function",
+            Badge(name: "Math Wizard", detail: "10 Mathematics sessions", icon: "function",
                   unlocked: mathCount >= 10),
-            Badge(name: "Maraton Belajar", detail: "Satu sesi ≥ 90 menit", icon: "timer",
+            Badge(name: "Study Marathon", detail: "One session ≥ 90 min", icon: "timer",
                   unlocked: sessions.contains { $0.totalSeconds >= 5400 })
         ]
     }

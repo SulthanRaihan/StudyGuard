@@ -26,16 +26,16 @@ struct RegisterView: View {
                 VStack(spacing: 10) {
                     BrandImage(name: "GuriHi", fallbackSystemName: "graduationcap.fill")
                         .frame(height: 100)
-                    Text("Buat Akun")
+                    Text("Create Account")
                         .font(.largeTitle.bold())
                         .foregroundStyle(Theme.navy)
-                    Text("Mulai perjalanan belajar yang lebih sehat.")
+                    Text("Start your healthier study journey.")
                         .font(.subheadline)
                         .foregroundStyle(Theme.muted)
                 }
 
                 VStack(spacing: 14) {
-                    TextField("Nama", text: $name)
+                    TextField("Name", text: $name)
                         .textContentType(.name)
                         .textFieldStyle(.roundedBorder)
 
@@ -46,7 +46,7 @@ struct RegisterView: View {
                         .autocorrectionDisabled()
                         .textFieldStyle(.roundedBorder)
 
-                    SecureField("Kata sandi (min. 6 karakter)", text: $password)
+                    SecureField("Password (min. 6 characters)", text: $password)
                         .textContentType(.newPassword)
                         .textFieldStyle(.roundedBorder)
 
@@ -64,13 +64,13 @@ struct RegisterView: View {
                     if auth.isBusy {
                         ProgressView().tint(.white)
                     } else {
-                        Text("Daftar")
+                        Text("Sign Up")
                     }
                 }
                 .buttonStyle(.sgPrimary)
                 .disabled(!canSubmit)
 
-                Button("Sudah punya akun? Masuk", action: onBackToLogin)
+                Button("Already have an account? Sign In", action: onBackToLogin)
                     .font(.subheadline)
                     .foregroundStyle(Theme.orange)
 

@@ -11,7 +11,7 @@ struct SettingsView: View {
     @ObservedObject var auth: AuthService
 
     @AppStorage(AppSettingsStore.sensitivityKey) private var sensitivity = AlertSensitivity.medium.rawValue
-    @AppStorage(AppSettingsStore.voiceLanguageKey) private var voiceLanguage = "id-ID"
+    @AppStorage(AppSettingsStore.voiceLanguageKey) private var voiceLanguage = "en-US"
     @AppStorage(AppSettingsStore.voiceEnabledKey) private var voiceEnabled = true
     @AppStorage(AppSettingsStore.postureAlertKey) private var postureAlert = true
     @AppStorage(AppSettingsStore.focusAlertKey) private var focusAlert = true
@@ -22,30 +22,30 @@ struct SettingsView: View {
                 VStack(spacing: 16) {
                     profileCard
 
-                    section("Sensitivitas Alarm Postur") {
-                        Picker("Sensitivitas", selection: $sensitivity) {
-                            Text("Rendah (20 dtk)").tag(AlertSensitivity.low.rawValue)
-                            Text("Sedang (10 dtk)").tag(AlertSensitivity.medium.rawValue)
-                            Text("Tinggi (5 dtk)").tag(AlertSensitivity.high.rawValue)
+                    section("Posture Alert Sensitivity") {
+                        Picker("Sensitivity", selection: $sensitivity) {
+                            Text("Low (20s)").tag(AlertSensitivity.low.rawValue)
+                            Text("Medium (10s)").tag(AlertSensitivity.medium.rawValue)
+                            Text("High (5s)").tag(AlertSensitivity.high.rawValue)
                         }
                         .pickerStyle(.segmented)
                     }
 
-                    section("Suara & Alarm") {
-                        Toggle("Suara pelatih", isOn: $voiceEnabled)
+                    section("Voice & Alerts") {
+                        Toggle("Coach voice", isOn: $voiceEnabled)
                         Divider()
-                        Picker("Bahasa suara", selection: $voiceLanguage) {
-                            Text("Indonesia").tag("id-ID")
+                        Picker("Voice language", selection: $voiceLanguage) {
                             Text("English").tag("en-US")
+                            Text("Indonesian").tag("id-ID")
                         }
                         Divider()
-                        Toggle("Alarm postur", isOn: $postureAlert)
+                        Toggle("Posture alerts", isOn: $postureAlert)
                         Divider()
-                        Toggle("Alarm fokus", isOn: $focusAlert)
+                        Toggle("Focus alerts", isOn: $focusAlert)
                     }
                     .tint(Theme.orange)
 
-                    Button("Keluar", role: .destructive) { auth.signOut() }
+                    Button("Sign Out", role: .destructive) { auth.signOut() }
                         .buttonStyle(.sgSecondary)
 
                     Text("StudyGuard v1.0")
@@ -65,9 +65,9 @@ struct SettingsView: View {
             BrandImage(name: "GuriHi", fallbackSystemName: "person.crop.circle.fill")
                 .frame(width: 54, height: 54)
             VStack(alignment: .leading, spacing: 2) {
-                Text(auth.displayName ?? "Pelajar")
+                Text(auth.displayName ?? "Learner")
                     .font(.title3.bold()).foregroundStyle(Theme.navy)
-                Text("Pengaturan").font(.caption).foregroundStyle(Theme.muted)
+                Text("Settings").font(.caption).foregroundStyle(Theme.muted)
             }
             Spacer()
         }

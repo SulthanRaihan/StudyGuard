@@ -13,7 +13,6 @@ struct MainView: View {
     @State private var tab: Tab = .home
     @State private var activeSession: SessionManager?
     @State private var summaryResult: SessionResult?
-    @State private var breakResult: SessionResult?
     @State private var showSetup = false
 
     enum Tab: Int { case home, stats, settings }
@@ -38,11 +37,7 @@ struct MainView: View {
             }
             .id(ObjectIdentifier(session))
         } else if let result = summaryResult {
-            SessionSummaryView(result: result,
-                               onStartBreak: { summaryResult = nil; breakResult = result },
-                               onDone: { summaryResult = nil })
-        } else if let result = breakResult {
-            BreakView(result: result) { breakResult = nil }
+            SessionSummaryView(result: result) { summaryResult = nil }
         } else if showSetup {
             PreSessionSetupView { subject, duration in
                 activeSession = makeSession(subject: subject, duration: duration)
@@ -58,7 +53,7 @@ struct MainView: View {
     }
 
     private var showTabBar: Bool {
-        activeSession == nil && summaryResult == nil && breakResult == nil && !showSetup
+        activeSession == nil && summaryResult == nil && !showSetup
     }
 
     // MARK: - Floating pill nav
@@ -66,8 +61,8 @@ struct MainView: View {
     private var pillNav: some View {
         HStack(spacing: 8) {
             navItem(.home, "house.fill", "Home")
-            navItem(.stats, "chart.bar.fill", "Statistik")
-            navItem(.settings, "gearshape.fill", "Atur")
+            navItem(.stats, "chart.bar.fill", "Stats")
+            navItem(.settings, "gearshape.fill", "Settings")
         }
         .padding(6)
         .background(Theme.navy, in: Capsule())

@@ -11,13 +11,13 @@ struct PreSessionSetupView: View {
     let onStart: (String, Int) -> Void
 
     private let subjects = [
-        "Matematika", "Fisika", "Kimia", "Biologi",
-        "Pemrograman", "Desain", "Bahasa Inggris",
-        "Ekonomi", "Sejarah", "Lainnya..."
+        "Mathematics", "Physics", "Chemistry", "Biology",
+        "Programming", "Design", "English",
+        "Economics", "History", "Other..."
     ]
     private let durations = [25, 50, 75]
 
-    @State private var selectedSubject = "Matematika"
+    @State private var selectedSubject = "Mathematics"
     @State private var selectedDuration = 25
 
     private let columns = [GridItem(.adaptive(minimum: 100), spacing: 12)]
@@ -25,9 +25,9 @@ struct PreSessionSetupView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 28) {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Mau belajar apa?")
+                Text("What are you studying?")
                     .font(.largeTitle.bold())
-                Text("Pilih mata pelajaran dan durasi sesimu.")
+                Text("Pick a subject and your session length.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
@@ -41,7 +41,7 @@ struct PreSessionSetupView: View {
             }
 
             VStack(alignment: .leading, spacing: 10) {
-                Text("Durasi")
+                Text("Duration")
                     .font(.headline)
                 HStack(spacing: 12) {
                     ForEach(durations, id: \.self) { minutes in
@@ -55,15 +55,13 @@ struct PreSessionSetupView: View {
             Button {
                 onStart(selectedSubject, selectedDuration)
             } label: {
-                Label("Mulai Sekarang", systemImage: "play.fill")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 6)
+                Label("Start Now", systemImage: "play.fill")
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
+            .buttonStyle(.sgPrimary)
         }
         .padding(24)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Theme.cream.ignoresSafeArea())
     }
 
     private func chip(_ title: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
@@ -90,7 +88,7 @@ struct PreSessionSetupView: View {
             VStack(spacing: 2) {
                 Text("\(minutes)")
                     .font(.title2.bold())
-                Text("menit")
+                Text("min")
                     .font(.caption)
             }
             .frame(maxWidth: .infinity)
