@@ -17,60 +17,59 @@ struct LoginView: View {
     }
 
     var body: some View {
-        VStack(spacing: 24) {
-            Spacer()
+        ZStack {
+            Theme.cream.ignoresSafeArea()
+            VStack(spacing: 24) {
+                Spacer()
 
-            VStack(spacing: 8) {
-                Image(systemName: "figure.mind.and.body")
-                    .font(.system(size: 56))
-                    .foregroundStyle(.tint)
-                Text("StudyGuard")
-                    .font(.largeTitle.bold())
-                Text("Teman belajar yang menjaga postur & fokusmu.")
+                VStack(spacing: 10) {
+                    BrandImage(name: "GuriLogo", fallbackSystemName: "graduationcap.fill")
+                        .frame(height: 130)
+                    Text("Selamat datang kembali")
+                        .font(.subheadline)
+                        .foregroundStyle(Theme.muted)
+                }
+
+                VStack(spacing: 14) {
+                    TextField("Email", text: $email)
+                        .textContentType(.emailAddress)
+                        .keyboardType(.emailAddress)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                        .textFieldStyle(.roundedBorder)
+
+                    SecureField("Kata sandi", text: $password)
+                        .textContentType(.password)
+                        .textFieldStyle(.roundedBorder)
+
+                    if let error = auth.errorMessage {
+                        Text(error)
+                            .font(.caption)
+                            .foregroundStyle(.red)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+
+                Button {
+                    Task { await auth.signIn(email: email, password: password) }
+                } label: {
+                    if auth.isBusy {
+                        ProgressView().tint(.white)
+                    } else {
+                        Text("Masuk")
+                    }
+                }
+                .buttonStyle(.sgPrimary)
+                .disabled(!canSubmit)
+
+                Button("Belum punya akun? Daftar", action: onRegister)
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
+                    .foregroundStyle(Theme.orange)
+
+                Spacer()
             }
-
-            VStack(spacing: 14) {
-                TextField("Email", text: $email)
-                    .textContentType(.emailAddress)
-                    .keyboardType(.emailAddress)
-                    .textInputAutocapitalization(.never)
-                    .autocorrectionDisabled()
-                    .textFieldStyle(.roundedBorder)
-
-                SecureField("Kata sandi", text: $password)
-                    .textContentType(.password)
-                    .textFieldStyle(.roundedBorder)
-
-                if let error = auth.errorMessage {
-                    Text(error)
-                        .font(.caption)
-                        .foregroundStyle(.red)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-            }
-
-            Button {
-                Task { await auth.signIn(email: email, password: password) }
-            } label: {
-                if auth.isBusy {
-                    ProgressView().frame(maxWidth: .infinity).padding(.vertical, 4)
-                } else {
-                    Text("Masuk").frame(maxWidth: .infinity).padding(.vertical, 4)
-                }
-            }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
-            .disabled(!canSubmit)
-
-            Button("Belum punya akun? Daftar", action: onRegister)
-                .font(.subheadline)
-
-            Spacer()
+            .padding(28)
         }
-        .padding(28)
     }
 }
 

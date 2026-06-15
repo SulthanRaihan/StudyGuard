@@ -23,6 +23,39 @@ final class FirebaseService {
         var level: StudyLevel { StudyLevel.level(forXP: totalXP) }
     }
 
+    /// A past session, for the dashboard and badges.
+    struct SessionRecord: Identifiable {
+        let id: String
+        let subject: String
+        let endTime: Date
+        let focusScore: Double
+        let postureScore: Double
+        let totalSeconds: Int
+    }
+
+    /// Recent sessions, newest first. Filters by `userId` only (no composite index
+    /// needed) and sorts client-side.
+    func fetchRecentSessions(userId: String, limit: Int = 50) async throws -> [SessionRecord] {
+        let snapshot = try await db.collection("sessions")
+            .whereField("userId", isEqualTo: userId)
+            .limit(to: limit)
+            .getDocuments()
+
+        return snapshot.documents.compactMap { doc -> SessionRecord? in
+            let data = doc.data()
+            guard let end = (data["endTime"] as? Timestamp)?.dateValue() else { return nil }
+            return SessionRecord(
+                id: doc.documentID,
+                subject: data["subject"] as? String ?? "",
+                endTime: end,
+                focusScore: data["focusScore"] as? Double ?? 0,
+                postureScore: data["postureScore"] as? Double ?? 0,
+                totalSeconds: data["totalDuration"] as? Int ?? 0
+            )
+        }
+        .sorted { $0.endTime > $1.endTime }
+    }
+
     // MARK: - User profile
 
     func createUserProfile(userId: String, name: String, email: String) async throws {

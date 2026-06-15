@@ -54,13 +54,15 @@ final class SessionManager: ObservableObject {
     private var sampleCount = 0
     private var focusTimeline: [Int] = []   // per-minute focus score, for the Groq summary
 
-    init(subject: String, targetDuration: Int, sensitivity: AlertSensitivity = .medium, voiceLanguage: String = "id-ID") {
+    init(subject: String, targetDuration: Int, sensitivity: AlertSensitivity = .medium,
+         voiceLanguage: String = "id-ID", voiceEnabled: Bool = true) {
         self.subject = subject
         self.targetDuration = targetDuration
         self.targetSeconds = targetDuration * 60
         self.remainingSeconds = targetDuration * 60
         posture.sensitivity = sensitivity
         voice.language = voiceLanguage
+        voice.isEnabled = voiceEnabled
     }
 
     // MARK: - Lifecycle

@@ -18,60 +18,66 @@ struct RegisterView: View {
     }
 
     var body: some View {
-        VStack(spacing: 24) {
-            Spacer()
+        ZStack {
+            Theme.cream.ignoresSafeArea()
+            VStack(spacing: 24) {
+                Spacer()
 
-            VStack(spacing: 8) {
-                Text("Buat Akun")
-                    .font(.largeTitle.bold())
-                Text("Mulai perjalanan belajar yang lebih sehat.")
+                VStack(spacing: 10) {
+                    BrandImage(name: "GuriHi", fallbackSystemName: "graduationcap.fill")
+                        .frame(height: 100)
+                    Text("Buat Akun")
+                        .font(.largeTitle.bold())
+                        .foregroundStyle(Theme.navy)
+                    Text("Mulai perjalanan belajar yang lebih sehat.")
+                        .font(.subheadline)
+                        .foregroundStyle(Theme.muted)
+                }
+
+                VStack(spacing: 14) {
+                    TextField("Nama", text: $name)
+                        .textContentType(.name)
+                        .textFieldStyle(.roundedBorder)
+
+                    TextField("Email", text: $email)
+                        .textContentType(.emailAddress)
+                        .keyboardType(.emailAddress)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                        .textFieldStyle(.roundedBorder)
+
+                    SecureField("Kata sandi (min. 6 karakter)", text: $password)
+                        .textContentType(.newPassword)
+                        .textFieldStyle(.roundedBorder)
+
+                    if let error = auth.errorMessage {
+                        Text(error)
+                            .font(.caption)
+                            .foregroundStyle(.red)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+
+                Button {
+                    Task { await auth.register(name: name, email: email, password: password) }
+                } label: {
+                    if auth.isBusy {
+                        ProgressView().tint(.white)
+                    } else {
+                        Text("Daftar")
+                    }
+                }
+                .buttonStyle(.sgPrimary)
+                .disabled(!canSubmit)
+
+                Button("Sudah punya akun? Masuk", action: onBackToLogin)
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Theme.orange)
+
+                Spacer()
             }
-
-            VStack(spacing: 14) {
-                TextField("Nama", text: $name)
-                    .textContentType(.name)
-                    .textFieldStyle(.roundedBorder)
-
-                TextField("Email", text: $email)
-                    .textContentType(.emailAddress)
-                    .keyboardType(.emailAddress)
-                    .textInputAutocapitalization(.never)
-                    .autocorrectionDisabled()
-                    .textFieldStyle(.roundedBorder)
-
-                SecureField("Kata sandi (min. 6 karakter)", text: $password)
-                    .textContentType(.newPassword)
-                    .textFieldStyle(.roundedBorder)
-
-                if let error = auth.errorMessage {
-                    Text(error)
-                        .font(.caption)
-                        .foregroundStyle(.red)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-            }
-
-            Button {
-                Task { await auth.register(name: name, email: email, password: password) }
-            } label: {
-                if auth.isBusy {
-                    ProgressView().frame(maxWidth: .infinity).padding(.vertical, 4)
-                } else {
-                    Text("Daftar").frame(maxWidth: .infinity).padding(.vertical, 4)
-                }
-            }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
-            .disabled(!canSubmit)
-
-            Button("Sudah punya akun? Masuk", action: onBackToLogin)
-                .font(.subheadline)
-
-            Spacer()
+            .padding(28)
         }
-        .padding(28)
     }
 }
 
