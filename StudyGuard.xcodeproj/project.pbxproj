@@ -10,12 +10,12 @@
 		05B39AD61D8377C74113F05C /* BreakExercise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54B4CD4745E9B85968858E35 /* BreakExercise.swift */; };
 		12A26B166B7B4F4B50F76BB0 /* StudySession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F437C8ADD353EE04FE086F8 /* StudySession.swift */; };
 		24FC58C6476EFFC026D22947 /* FocusSample.swift in Sources */ = {isa = PBXBuildFile; fileRef = C44042E43714C4527CE79F26 /* FocusSample.swift */; };
+		251A17E216BB59EC0AFE5BF4 /* CameraPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F3458890067097EE0AAF3C /* CameraPreviewView.swift */; };
 		25CAAC6413061F9A66B823DD /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7498A904BD8E95F4849CAA72 /* CameraManager.swift */; };
 		714B4D1E1731FE700C733738 /* PostureDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7ACCF193878B39810B88AAA2 /* PostureDetector.swift */; };
-		251A17E216BB59EC0AFE5BF4 /* CameraPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F3458890067097EE0AAF3C /* CameraPreviewView.swift */; };
 		74263F2C48CDF716CE1E8AD6 /* PostureManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC61643B39D4585B5330A5A0 /* PostureManager.swift */; };
-		9CB8DACB80A30E15270F1844 /* SessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48097BE89943C1AD9CEA4728 /* SessionView.swift */; };
 		90894B41219019886F59FEBF /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD3E8F4C1A3BBBE0F8F6467A /* User.swift */; };
+		9CB8DACB80A30E15270F1844 /* SessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48097BE89943C1AD9CEA4728 /* SessionView.swift */; };
 		D2B8D537E88A17B00E74B98A /* PostureEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55B677CC2BD5120BA4D98B6 /* PostureEvent.swift */; };
 		EB7CDA2A2FDC265200DE8E7E /* StudyGuardApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7CDA292FDC265200DE8E7E /* StudyGuardApp.swift */; };
 		EB7CDA2C2FDC265200DE8E7E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7CDA2B2FDC265200DE8E7E /* ContentView.swift */; };
@@ -51,14 +51,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		03F3458890067097EE0AAF3C /* CameraPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreviewView.swift; sourceTree = "<group>"; };
 		0F437C8ADD353EE04FE086F8 /* StudySession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudySession.swift; sourceTree = "<group>"; };
 		417E456639E0067855E42D2A /* FocusEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusEvent.swift; sourceTree = "<group>"; };
+		48097BE89943C1AD9CEA4728 /* SessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionView.swift; sourceTree = "<group>"; };
 		54B4CD4745E9B85968858E35 /* BreakExercise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreakExercise.swift; sourceTree = "<group>"; };
 		7498A904BD8E95F4849CAA72 /* CameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
 		7ACCF193878B39810B88AAA2 /* PostureDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostureDetector.swift; sourceTree = "<group>"; };
-		03F3458890067097EE0AAF3C /* CameraPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreviewView.swift; sourceTree = "<group>"; };
 		BC61643B39D4585B5330A5A0 /* PostureManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostureManager.swift; sourceTree = "<group>"; };
-		48097BE89943C1AD9CEA4728 /* SessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionView.swift; sourceTree = "<group>"; };
 		BD3E8F4C1A3BBBE0F8F6467A /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		C44042E43714C4527CE79F26 /* FocusSample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusSample.swift; sourceTree = "<group>"; };
 		E55B677CC2BD5120BA4D98B6 /* PostureEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostureEvent.swift; sourceTree = "<group>"; };
@@ -116,6 +116,30 @@
 				54B4CD4745E9B85968858E35 /* BreakExercise.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		553131CC809EB3D33CAD9373 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				846FFA1773787F5E8E6AEB1F /* Session */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		651A7B142220C9DFE7C6CDDB /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				BC61643B39D4585B5330A5A0 /* PostureManager.swift */,
+			);
+			path = Managers;
+			sourceTree = "<group>";
+		};
+		846FFA1773787F5E8E6AEB1F /* Session */ = {
+			isa = PBXGroup;
+			children = (
+				48097BE89943C1AD9CEA4728 /* SessionView.swift */,
+			);
+			path = Session;
 			sourceTree = "<group>";
 		};
 		C96A1B6281A8E757BD4D3BFC /* Vision */ = {
@@ -204,30 +228,6 @@
 				651A7B142220C9DFE7C6CDDB /* Managers */,
 			);
 			path = Core;
-			sourceTree = "<group>";
-		};
-		651A7B142220C9DFE7C6CDDB /* Managers */ = {
-			isa = PBXGroup;
-			children = (
-				BC61643B39D4585B5330A5A0 /* PostureManager.swift */,
-			);
-			path = Managers;
-			sourceTree = "<group>";
-		};
-		553131CC809EB3D33CAD9373 /* Features */ = {
-			isa = PBXGroup;
-			children = (
-				846FFA1773787F5E8E6AEB1F /* Session */,
-			);
-			path = Features;
-			sourceTree = "<group>";
-		};
-		846FFA1773787F5E8E6AEB1F /* Session */ = {
-			isa = PBXGroup;
-			children = (
-				48097BE89943C1AD9CEA4728 /* SessionView.swift */,
-			);
-			path = Session;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -543,6 +543,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"StudyGuard/Preview Content\"";
+				DEVELOPMENT_TEAM = CT956VYJQ9;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "StudyGuard menggunakan kamera depan untuk memantau postur dan fokus kamu selama sesi belajar.";
@@ -572,6 +573,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"StudyGuard/Preview Content\"";
+				DEVELOPMENT_TEAM = CT956VYJQ9;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "StudyGuard menggunakan kamera depan untuk memantau postur dan fokus kamu selama sesi belajar.";
