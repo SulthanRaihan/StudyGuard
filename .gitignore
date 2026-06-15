@@ -1,0 +1,23 @@
+# macOS
+.DS_Store
+
+# Xcode — user-specific state (not shared)
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+
+# Build output
+build/
+DerivedData/
+
+# Swift Package Manager (keep Package.resolved / shared swiftpm data committed)
+.build/
+
+# Secrets — never commit (see CLAUDE.md)
+Secrets.plist
+
+# Claude Code local settings (CLAUDE.md and skills/ stay tracked)
+.claude/settings.local.json
+
+# Stray duplicate model — the project uses ML/PostureClassifier.mlmodel
+/PostureClassifier.mlmodel
