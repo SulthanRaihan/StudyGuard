@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "skills": {
+    "code-reviewer": {
+      "source": "google-gemini/gemini-cli",
+      "sourceType": "github",
+      "skillPath": ".gemini/skills/code-reviewer/SKILL.md",
+      "computedHash": "270f0dd1d4c15a798bad5253a309cdc2056fe5322f99ba06ca22ce50581adc02"
+    },
+    "handoff": {
+      "source": "steveclarke/dotfiles",
+      "sourceType": "github",
+      "skillPath": "ai/skills/handoff/SKILL.md",
+      "computedHash": "0a9c8a8844dd5cd8200ccbab0ccb47efcb0acb795c0fe0def5b21fd3738583d7"
+    },
+    "prp-commit": {
+      "source": "yandy-r/claude-plugins",
+      "sourceType": "github",
+      "skillPath": "ycc/skills/prp-commit/SKILL.md",
+      "computedHash": "f357d8a1e508ffde79eddf4b4ea975b520db4b557ba2ff2438044d67c6dddad3"
+    },
+    "swiftui-expert-skill": {
+      "source": "AvdLee/SwiftUI-Agent-Skill",
+      "sourceType": "github",
+      "skillPath": "swiftui-expert-skill/SKILL.md",
+      "computedHash": "ffe7adc4c442d2e75985b61ab281e3e303fe201c077ed05d82c0198a18fb1a25"
+    }
+  }
+}
