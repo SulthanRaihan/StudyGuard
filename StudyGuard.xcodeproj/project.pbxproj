@@ -37,6 +37,7 @@
 		EB7CDA472FDC265400DE8E7E /* StudyGuardUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7CDA462FDC265400DE8E7E /* StudyGuardUITestsLaunchTests.swift */; };
 		EB7CDA552FDC2C0800DE8E7E /* PostureClassifier.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = EB7CDA542FDC2C0700DE8E7E /* PostureClassifier.mlmodel */; };
 		EB7CDA572FDC3A4900DE8E7E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = EB7CDA562FDC3A4800DE8E7E /* GoogleService-Info.plist */; };
+		FB206FDB33ADB71A2FD838AA /* Secrets.plist in Resources */ = {isa = PBXBuildFile; fileRef = 65FAE598CB62D92A0685A019 /* Secrets.plist */; };
 		EB7CDA5A2FDC3B3500DE8E7E /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = EB7CDA592FDC3B3500DE8E7E /* FirebaseAuth */; };
 		EB7CDA5C2FDC3B3500DE8E7E /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = EB7CDA5B2FDC3B3500DE8E7E /* FirebaseFirestore */; };
 		EB7CDA5F2FDC3B8000DE8E7E /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = EB7CDA5E2FDC3B8000DE8E7E /* GoogleSignIn */; };
@@ -96,6 +97,7 @@
 		EB7CDA462FDC265400DE8E7E /* StudyGuardUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyGuardUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		EB7CDA542FDC2C0700DE8E7E /* PostureClassifier.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = PostureClassifier.mlmodel; sourceTree = "<group>"; };
 		EB7CDA562FDC3A4800DE8E7E /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		65FAE598CB62D92A0685A019 /* Secrets.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Secrets.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -211,6 +213,7 @@
 				FE9422A027A0496895788CFC /* Core */,
 				C96A1B6281A8E757BD4D3BFC /* Vision */,
 				553131CC809EB3D33CAD9373 /* Features */,
+				65FAE598CB62D92A0685A019 /* Secrets.plist */,
 				EB7CDA2D2FDC265400DE8E7E /* Assets.xcassets */,
 				EB7CDA2F2FDC265400DE8E7E /* Preview Content */,
 			);
@@ -410,6 +413,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EB7CDA572FDC3A4900DE8E7E /* GoogleService-Info.plist in Resources */,
+				FB206FDB33ADB71A2FD838AA /* Secrets.plist in Resources */,
 				EB7CDA312FDC265400DE8E7E /* Preview Assets.xcassets in Resources */,
 				EB7CDA2E2FDC265400DE8E7E /* Assets.xcassets in Resources */,
 			);
