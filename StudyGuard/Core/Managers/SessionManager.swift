@@ -12,7 +12,9 @@ import Combine
 final class SessionManager: ObservableObject {
 
     enum Phase {
+        case calibrating
         case studying
+        case paused
         case finished(reason: EndReason)
     }
 
@@ -30,11 +32,13 @@ final class SessionManager: ObservableObject {
     @Published private(set) var avgPosture: Double = 100
     @Published private(set) var avgFocus: Double = 100
     @Published private(set) var postureAlertCount = 0
+    @Published private(set) var distractionCount = 0
 
     // MARK: - Config
 
     let subject: String
     let targetDuration: Int            // minutes (user's choice)
+    private(set) var startedAt = Date()
     private var targetSeconds: Int     // mutable: adaptive timer can extend it
 
     // MARK: - Owned managers
@@ -51,24 +55,60 @@ final class SessionManager: ObservableObject {
     private var postureSum = 0.0
     private var focusSum = 0.0
     private var sampleCount = 0
+    private var focusTimeline: [Int] = []   // per-minute focus score, for the Groq summary
 
-    init(subject: String, targetDuration: Int, sensitivity: AlertSensitivity = .medium, voiceLanguage: String = "id-ID") {
+    init(subject: String, targetDuration: Int, sensitivity: AlertSensitivity = .medium,
+         voiceLanguage: String = "en-US", voiceEnabled: Bool = true) {
         self.subject = subject
         self.targetDuration = targetDuration
         self.targetSeconds = targetDuration * 60
         self.remainingSeconds = targetDuration * 60
         posture.sensitivity = sensitivity
         voice.language = voiceLanguage
+        voice.isEnabled = voiceEnabled
     }
 
     // MARK: - Lifecycle
 
     func start() {
+        startedAt = Date()
         camera.start()
+        posture.connect(to: camera)
+        focus.connect(to: camera)
+
+        // Calibrate the user's upright posture before the clock starts.
+        phase = .calibrating
+        posture.calibrate(seconds: 4) { [weak self] in
+            guard let self, case .calibrating = self.phase else { return }
+            self.startedAt = Date()
+            self.observeAlerts()
+            self.startTimer()
+            self.phase = .studying
+        }
+    }
+
+    /// Pauses the session: camera + detectors + timer stop, but the session is
+    /// not finished (the user can resume or take a break).
+    func pause() {
+        guard case .studying = phase else { return }
+        timer?.invalidate()
+        timer = nil
+        posture.disconnect()
+        focus.disconnect()
+        camera.pause()
+        voice.stop()
+        phase = .paused
+    }
+
+    /// Resumes a paused session.
+    func resume() {
+        guard case .paused = phase else { return }
+        camera.resume()
         posture.connect(to: camera)
         focus.connect(to: camera)
         observeAlerts()
         startTimer()
+        phase = .studying
     }
 
     /// Ends the session and releases the camera. `reason` defaults to a user-tap.
@@ -81,6 +121,22 @@ final class SessionManager: ObservableObject {
         camera.stop()
         voice.stop()
         phase = .finished(reason: reason)
+    }
+
+    /// Snapshot of the finished session for the summary, break, and persistence.
+    func makeResult() -> SessionResult {
+        SessionResult(
+            subject: subject,
+            totalSeconds: elapsedSeconds,
+            targetMinutes: targetDuration,
+            avgPosture: avgPosture,
+            avgFocus: avgFocus,
+            postureAlertCount: postureAlertCount,
+            distractionCount: distractionCount,
+            dominantIssue: posture.dominantIssue,
+            focusTimeline: focusTimeline,
+            startedAt: startedAt
+        )
     }
 
     // MARK: - Timer
@@ -105,11 +161,22 @@ final class SessionManager: ObservableObject {
         avgFocus = focusSum / Double(sampleCount)
 
         if elapsedSeconds % 60 == 0 {
+            focusTimeline.append(Int(focus.focusScore))
             checkAdaptiveTimer()
+        }
+        // Periodic wellness reminders (voice).
+        if elapsedSeconds > 0 {
+            if elapsedSeconds % (20 * 60) == 0 {
+                voice.speak("Time to rest your eyes — look at something far away for 20 seconds.",
+                            key: "eye-rest", cooldown: 60)
+            }
+            if elapsedSeconds % (30 * 60) == 0 {
+                voice.speak("Don't forget to drink some water!", key: "water", cooldown: 60)
+            }
         }
         if remainingSeconds == 0 {
             end(reason: .timerComplete)
-            voice.announce("Waktunya istirahat! Lakukan peregangan sebentar.")
+            voice.announce("Time's up! Great work — your session is complete.")
         }
     }
 
@@ -122,10 +189,10 @@ final class SessionManager: ObservableObject {
         if recentFocus > 85, elapsedSeconds >= targetSeconds {
             targetSeconds += 5 * 60
             remainingSeconds = max(0, targetSeconds - elapsedSeconds)
-            voice.announce("Kamu lagi fokus banget, perpanjang 5 menit ya!")
+            voice.announce("You're in deep focus — let's add 5 more minutes!")
         } else if recentFocus < 40, elapsedMinutes > 15 {
             end(reason: .focusDrop)
-            voice.announce("Fokus kamu mulai turun, waktunya istirahat sebentar.")
+            voice.announce("Your focus is dropping — let's wrap up this session.")
         }
         // Normal on-time break is handled by remainingSeconds hitting 0 in tick().
     }
@@ -150,9 +217,10 @@ final class SessionManager: ObservableObject {
                 guard let self else { return }
                 switch state {
                 case .drowsy:
-                    self.voice.speak("Kamu terlihat mengantuk, ambil nafas dalam.", key: "drowsy", cooldown: 20)
+                    self.voice.speak("You look drowsy — take a deep breath.", key: "drowsy", cooldown: 20)
                 case .distracted:
-                    self.voice.speak("Fokus kembali ke materi kamu.", key: "distracted", cooldown: 45)
+                    self.distractionCount += 1
+                    self.voice.speak("Let's get back to your study material.", key: "distracted", cooldown: 45)
                 case .focused:
                     break
                 }
@@ -162,10 +230,10 @@ final class SessionManager: ObservableObject {
 
     private func postureMessage(for type: PostureType) -> String {
         switch type {
-        case .tlf: return "Punggung kamu membungkuk ke depan, perbaiki posisi duduk."
-        case .tlb: return "Kamu bersandar terlalu jauh ke belakang."
-        case .tlr: return "Kamu miring ke kanan, duduk tegak ya."
-        case .tll: return "Kamu miring ke kiri, duduk tegak ya."
+        case .tlf: return "You're slouching forward — sit up straight."
+        case .tlb: return "You're leaning too far back."
+        case .tlr: return "You're tilting to the right — straighten up."
+        case .tll: return "You're tilting to the left — straighten up."
         case .tup: return ""
         }
     }

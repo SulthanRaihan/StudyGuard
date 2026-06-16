@@ -21,3 +21,9 @@ Secrets.plist
 
 # Stray duplicate model — the project uses ML/PostureClassifier.mlmodel
 /PostureClassifier.mlmodel
+
+# Python backend
+backend/.env
+backend/.venv/
+backend/__pycache__/
+*.pyc

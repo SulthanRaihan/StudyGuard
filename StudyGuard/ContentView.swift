@@ -2,31 +2,41 @@
 //  ContentView.swift
 //  StudyGuard
 //
-//  Created by 20 on 2026/6/12.
-//
 
 import SwiftUI
 
+/// Root router: gates on auth state, then hands off to the main tab experience.
 struct ContentView: View {
-    // Milestone 3: PreSession -> Session flow. Auth + Home arrive in later milestones.
-    @State private var activeSession: SessionManager?
+    @StateObject private var auth = AuthService()
 
     var body: some View {
-        if let session = activeSession {
-            SessionView(session: session) {
-                activeSession = nil
-            }
-            .id(ObjectIdentifier(session))
+        if auth.isAuthenticated {
+            MainView(auth: auth)
         } else {
-            PreSessionSetupView { subject, duration in
-                activeSession = SessionManager(subject: subject, targetDuration: duration)
-            }
+            AuthFlow(auth: auth)
         }
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
+/// Onboarding -> login / registration.
+private struct AuthFlow: View {
+    @ObservedObject var auth: AuthService
+    @State private var screen: Screen = .onboarding
+
+    private enum Screen { case onboarding, login, register }
+
+    var body: some View {
+        switch screen {
+        case .onboarding:
+            OnboardingView(
+                onSignUp: { screen = .register },
+                onSignIn: { screen = .login },
+                onGoogle: { Task { await auth.signInWithGoogle() } }
+            )
+        case .login:
+            LoginView(auth: auth) { screen = .register }
+        case .register:
+            RegisterView(auth: auth) { screen = .login }
+        }
     }
 }

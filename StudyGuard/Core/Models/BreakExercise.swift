@@ -11,6 +11,7 @@ struct BreakExercise: Codable, Identifiable {
     var duration: Int          // seconds
     var targetArea: TargetArea
     var instructions: String?
+    var gifUrl: String? = nil   // animated demo from ExerciseDB
     var completed: Bool = false
 }
 

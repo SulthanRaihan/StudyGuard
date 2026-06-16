@@ -6,17 +6,19 @@
 import SwiftUI
 
 /// The live study screen: camera feed, real-time posture + focus readouts,
-/// countdown timer, and a post-session summary. Driven by `SessionManager`.
+/// countdown timer, pause→break flow, and a post-session summary handoff.
 struct SessionView: View {
     @ObservedObject private var session: SessionManager
     @ObservedObject private var camera: CameraManager
     @ObservedObject private var posture: PostureManager
     @ObservedObject private var focus: FocusManager
 
-    /// Called when the user dismisses the finished session.
-    let onFinish: () -> Void
+    /// Called with the session's result when the user leaves the finished session.
+    let onFinish: (SessionResult) -> Void
 
-    init(session: SessionManager, onFinish: @escaping () -> Void) {
+    @State private var showBreak = false
+
+    init(session: SessionManager, onFinish: @escaping (SessionResult) -> Void) {
         self.session = session
         self.camera = session.camera
         self.posture = session.posture
@@ -27,13 +29,22 @@ struct SessionView: View {
     var body: some View {
         ZStack {
             cameraLayer
-            overlay
-            if case let .finished(reason) = session.phase {
-                finishedOverlay(reason: reason)
+            if posture.isBodyDetected {
+                PostureOverlayView(joints: posture.joints).ignoresSafeArea()
             }
+            overlay
+            if case .calibrating = session.phase { calibratingOverlay }
+            if case .paused = session.phase { pausedOverlay }
+            if case let .finished(reason) = session.phase { finishedOverlay(reason: reason) }
         }
         .onAppear(perform: start)
         .onDisappear { session.end() }
+        .fullScreenCover(isPresented: $showBreak) {
+            BreakView(result: session.makeResult(), isMidSession: true) {
+                showBreak = false
+                session.resume()
+            }
+        }
     }
 
     // MARK: - Camera layer
@@ -42,8 +53,7 @@ struct SessionView: View {
     private var cameraLayer: some View {
         switch camera.authorizationState {
         case .authorized:
-            CameraPreviewView(session: camera.session)
-                .ignoresSafeArea()
+            CameraPreviewView(session: camera.session).ignoresSafeArea()
         case .notDetermined:
             Color.black.ignoresSafeArea()
         case .denied:
@@ -55,28 +65,22 @@ struct SessionView: View {
         ZStack {
             Color.black.ignoresSafeArea()
             VStack(spacing: 16) {
-                Image(systemName: "camera.fill")
-                    .font(.system(size: 44))
-                    .foregroundStyle(.secondary)
-                Text("Akses kamera dibutuhkan")
-                    .font(.headline)
-                Text("Aktifkan kamera di Pengaturan untuk memulai sesi belajar.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                Button("Buka Pengaturan") {
+                Image(systemName: "camera.fill").font(.system(size: 44)).foregroundStyle(.secondary)
+                Text("Camera access needed").font(.headline)
+                Text("Enable the camera in Settings to start a study session.")
+                    .font(.subheadline).foregroundStyle(.secondary).multilineTextAlignment(.center)
+                Button("Open Settings") {
                     if let url = URL(string: UIApplication.openSettingsURLString) {
                         UIApplication.shared.open(url)
                     }
                 }
                 .buttonStyle(.borderedProminent)
             }
-            .padding(40)
-            .foregroundStyle(.white)
+            .padding(40).foregroundStyle(.white)
         }
     }
 
-    // MARK: - Overlay
+    // MARK: - Live overlay
 
     private var overlay: some View {
         VStack {
@@ -84,8 +88,8 @@ struct SessionView: View {
             postureCard
             Spacer()
             HStack(alignment: .bottom, spacing: 12) {
-                FocusScoreView(title: "Fokus", score: focus.focusScore, caption: focusCaption)
-                FocusScoreView(title: "Postur", score: posture.postureScore, caption: postureCaption)
+                FocusScoreView(title: "Focus", score: focus.focusScore, caption: focusCaption)
+                FocusScoreView(title: "Posture", score: posture.postureScore, caption: postureCaption)
             }
         }
         .padding()
@@ -94,25 +98,21 @@ struct SessionView: View {
     private var header: some View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
-                Text(session.subject)
-                    .font(.headline)
-                    .foregroundStyle(.white)
-                Text("Sisa waktu")
-                    .font(.caption2)
-                    .foregroundStyle(.white.opacity(0.7))
+                Text(session.subject).font(.headline).foregroundStyle(.white)
+                Text("Time left").font(.caption2).foregroundStyle(.white.opacity(0.7))
             }
             Spacer()
             Text(timeString)
                 .font(.system(size: 30, weight: .bold, design: .rounded).monospacedDigit())
                 .foregroundStyle(.white)
             Spacer()
-            Button(role: .destructive) {
-                session.end(reason: .userEnded)
+            Button {
+                session.pause()
             } label: {
-                Image(systemName: "stop.fill")
+                Image(systemName: "pause.fill")
                     .font(.title3)
                     .padding(10)
-                    .background(.red.opacity(0.85), in: Circle())
+                    .background(Theme.orange, in: Circle())
                     .foregroundStyle(.white)
             }
         }
@@ -126,82 +126,129 @@ struct SessionView: View {
                 Label(type.displayName, systemImage: type.iconName)
                     .font(.title3.weight(.semibold))
                     .foregroundStyle(type.isGood ? .green : .orange)
-                Text("Keyakinan \(Int(posture.currentConfidence * 100))%")
-                    .font(.caption)
-                    .foregroundStyle(.white.opacity(0.8))
+                Text("Confidence \(Int(posture.currentConfidence * 100))%")
+                    .font(.caption).foregroundStyle(.white.opacity(0.8))
             } else {
-                Label("Mencari tubuh…", systemImage: "figure.stand")
+                Label("Looking for you…", systemImage: "figure.stand")
                     .font(.title3.weight(.semibold))
                     .foregroundStyle(.white.opacity(0.85))
             }
         }
-        .padding(.vertical, 12)
-        .padding(.horizontal, 20)
+        .padding(.vertical, 12).padding(.horizontal, 20)
         .background(.black.opacity(0.55), in: RoundedRectangle(cornerRadius: 16))
         .animation(.easeInOut(duration: 0.2), value: posture.currentPosture)
     }
 
     private var focusCaption: String {
-        guard focus.isFaceDetected else { return "Wajah tak terlihat" }
+        guard focus.isFaceDetected else { return "No face" }
         switch focus.currentState {
-        case .focused: return "Fokus"
-        case .drowsy: return "Mengantuk"
-        case .distracted: return "Teralihkan"
+        case .focused: return "Focused"
+        case .drowsy: return "Drowsy"
+        case .distracted: return "Distracted"
         }
     }
 
     private var postureCaption: String {
-        posture.dominantIssue?.displayName ?? "Tegak"
+        posture.dominantIssue?.displayName ?? "Upright"
     }
 
-    // MARK: - Finished overlay
+    // MARK: - Calibrating overlay
+
+    private var calibratingOverlay: some View {
+        ZStack {
+            Color.black.opacity(0.78).ignoresSafeArea()
+            VStack(spacing: 18) {
+                BrandImage(name: "GuriHi", fallbackSystemName: "figure.stand")
+                    .frame(height: 110)
+                ProgressView().tint(.white).scaleEffect(1.3)
+                Text("Calibrating…")
+                    .font(.title2.bold()).foregroundStyle(.white)
+                Text("Sit up straight and look at the screen.\nThis helps Guri learn your good posture.")
+                    .font(.subheadline).foregroundStyle(.white.opacity(0.85))
+                    .multilineTextAlignment(.center)
+            }
+            .padding(32)
+        }
+    }
+
+    // MARK: - Paused overlay
+
+    private var pausedOverlay: some View {
+        ZStack {
+            Color.black.opacity(0.8).ignoresSafeArea()
+            VStack(spacing: 18) {
+                Image(systemName: "pause.circle.fill").font(.system(size: 56)).foregroundStyle(Theme.orange)
+                Text("Session paused").font(.title2.bold()).foregroundStyle(.white)
+                Text("Resume when you're ready, or take a quick break.")
+                    .font(.subheadline).foregroundStyle(.white.opacity(0.8))
+                    .multilineTextAlignment(.center)
+
+                VStack(spacing: 12) {
+                    Button { session.resume() } label: {
+                        Label("Resume", systemImage: "play.fill")
+                    }
+                    .buttonStyle(.sgPrimary)
+
+                    Button { showBreak = true } label: {
+                        Label("Take a break", systemImage: "cup.and.saucer.fill")
+                            .frame(maxWidth: .infinity).padding(.vertical, 16)
+                            .background(.white.opacity(0.15), in: RoundedRectangle(cornerRadius: 16))
+                            .foregroundStyle(.white)
+                    }
+
+                    Button(role: .destructive) {
+                        session.end(reason: .userEnded)
+                    } label: {
+                        Text("End session").frame(maxWidth: .infinity).padding(.vertical, 12)
+                    }
+                    .foregroundStyle(.red)
+                }
+                .padding(.top, 4)
+            }
+            .padding(32)
+        }
+    }
+
+    // MARK: - Finished overlay (no break — done means done)
 
     private func finishedOverlay(reason: SessionManager.EndReason) -> some View {
         ZStack {
             Color.black.opacity(0.85).ignoresSafeArea()
             VStack(spacing: 18) {
-                Image(systemName: "checkmark.circle.fill")
-                    .font(.system(size: 60))
-                    .foregroundStyle(.green)
-                Text("Sesi selesai")
-                    .font(.title.bold())
+                BrandImage(name: "GuriCelebrate", fallbackSystemName: "checkmark.circle.fill")
+                    .frame(height: 130)
+                Text("Session complete!").font(.title.bold())
                 Text(reasonText(reason))
-                    .font(.subheadline)
-                    .foregroundStyle(.white.opacity(0.8))
-                    .multilineTextAlignment(.center)
+                    .font(.subheadline).foregroundStyle(.white.opacity(0.8)).multilineTextAlignment(.center)
 
                 HStack(spacing: 28) {
-                    stat("Durasi", "\(session.elapsedSeconds / 60) mnt")
-                    stat("Postur", "\(Int(session.avgPosture))%")
-                    stat("Fokus", "\(Int(session.avgFocus))%")
+                    stat("Duration", "\(session.elapsedSeconds / 60)m")
+                    stat("Posture", "\(Int(session.avgPosture))%")
+                    stat("Focus", "\(Int(session.avgFocus))%")
                 }
                 .padding(.top, 4)
 
-                Button("Selesai", action: onFinish)
+                Button("View Summary") { onFinish(session.makeResult()) }
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
                     .padding(.top, 8)
             }
-            .padding(32)
-            .foregroundStyle(.white)
+            .padding(32).foregroundStyle(.white)
         }
     }
 
     private func stat(_ label: String, _ value: String) -> some View {
         VStack(spacing: 4) {
-            Text(value)
-                .font(.title3.bold())
-            Text(label)
-                .font(.caption)
-                .foregroundStyle(.white.opacity(0.7))
+            Text(value).font(.title3.bold())
+            Text(label).font(.caption).foregroundStyle(.white.opacity(0.7))
         }
     }
 
     private func reasonText(_ reason: SessionManager.EndReason) -> String {
         switch reason {
-        case .timerComplete: return "Kerja bagus! Kamu menyelesaikan sesi sesuai target."
-        case .focusDrop: return "Fokusmu menurun — saatnya istirahat sejenak."
-        case .userEnded: return "Sesi dihentikan."
+        case .timerComplete: return "Great work! You hit your target."
+        case .focusDrop: return "Focus was dropping — time to rest."
+        case .userEnded: return "Session ended."
         }
     }
 
@@ -213,8 +260,6 @@ struct SessionView: View {
     // MARK: - Lifecycle
 
     private func start() {
-        // Defer past the current SwiftUI update so side-effecting @Published
-        // mutations don't fire "within view updates".
         DispatchQueue.main.async {
             switch camera.authorizationState {
             case .authorized:
@@ -234,14 +279,13 @@ struct SessionView: View {
 // MARK: - Display helpers
 
 private extension PostureType {
-    /// Indonesian label shown to the user.
     var displayName: String {
         switch self {
-        case .tup: return "Postur tegak"
-        case .tlf: return "Membungkuk ke depan"
-        case .tlb: return "Bersandar ke belakang"
-        case .tlr: return "Miring ke kanan"
-        case .tll: return "Miring ke kiri"
+        case .tup: return "Upright posture"
+        case .tlf: return "Slouching forward"
+        case .tlb: return "Leaning back"
+        case .tlr: return "Tilting right"
+        case .tll: return "Tilting left"
         }
     }
 
@@ -258,6 +302,6 @@ private extension PostureType {
 
 struct SessionView_Previews: PreviewProvider {
     static var previews: some View {
-        SessionView(session: SessionManager(subject: "Matematika", targetDuration: 25)) {}
+        SessionView(session: SessionManager(subject: "Mathematics", targetDuration: 25)) { _ in }
     }
 }
