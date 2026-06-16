@@ -79,6 +79,41 @@ final class FirebaseService {
         try await db.collection("users").document(userId).setData(data)
     }
 
+    // MARK: - Settings sync
+
+    /// Persists the user's settings map (merged into the user document).
+    func saveSettings(userId: String, settings: [String: Any]) async throws {
+        try await db.collection("users").document(userId).setData(["settings": settings], merge: true)
+    }
+
+    /// Reads the user's settings map, if any.
+    func fetchSettings(userId: String) async throws -> [String: Any]? {
+        let snapshot = try await db.collection("users").document(userId).getDocument()
+        return snapshot.data()?["settings"] as? [String: Any]
+    }
+
+    // MARK: - Achievements
+
+    /// Records any newly-unlocked badges in the user document (keyed map), stamping
+    /// `unlockedAt` once. Existing entries are left untouched.
+    func syncAchievements(userId: String, unlocked: [(key: String, name: String, type: String)]) async {
+        let ref = db.collection("users").document(userId)
+        let snapshot = try? await ref.getDocument()
+        var map = (snapshot?.data()?["achievements"] as? [String: Any]) ?? [:]
+        var changed = false
+        for badge in unlocked where map[badge.key] == nil {
+            map[badge.key] = [
+                "name": badge.name,
+                "type": badge.type,
+                "unlockedAt": Timestamp(date: Date())
+            ]
+            changed = true
+        }
+        if changed {
+            try? await ref.setData(["achievements": map], merge: true)
+        }
+    }
+
     func fetchProfile(userId: String) async throws -> Profile {
         let snapshot = try await db.collection("users").document(userId).getDocument()
         let data = snapshot.data() ?? [:]

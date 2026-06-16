@@ -147,7 +147,8 @@ struct DashboardView: View {
 
     private var badgesLink: some View {
         NavigationLink {
-            BadgesView(sessions: sessions, currentStreak: profile?.currentStreak ?? 0)
+            BadgesView(sessions: sessions, currentStreak: profile?.currentStreak ?? 0,
+                       userId: auth.currentUserId)
         } label: {
             HStack {
                 Image(systemName: "rosette").foregroundStyle(Theme.orange)

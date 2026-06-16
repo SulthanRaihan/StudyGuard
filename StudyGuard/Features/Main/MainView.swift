@@ -25,6 +25,19 @@ struct MainView: View {
                 pillNav
             }
         }
+        .task { await loadCloudSettings() }
+    }
+
+    /// Pull the user's saved settings from Firestore into local defaults on launch.
+    private func loadCloudSettings() async {
+        guard let uid = auth.currentUserId,
+              let settings = try? await FirebaseService.shared.fetchSettings(userId: uid) else { return }
+        let defaults = UserDefaults.standard
+        if let v = settings["alertSensitivity"] as? String { defaults.set(v, forKey: AppSettingsStore.sensitivityKey) }
+        if let v = settings["voiceLanguage"] as? String { defaults.set(v, forKey: AppSettingsStore.voiceLanguageKey) }
+        if let v = settings["voiceEnabled"] as? Bool { defaults.set(v, forKey: AppSettingsStore.voiceEnabledKey) }
+        if let v = settings["postureAlertEnabled"] as? Bool { defaults.set(v, forKey: AppSettingsStore.postureAlertKey) }
+        if let v = settings["focusAlertEnabled"] as? Bool { defaults.set(v, forKey: AppSettingsStore.focusAlertKey) }
     }
 
     @ViewBuilder

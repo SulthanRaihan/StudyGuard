@@ -57,7 +57,24 @@ struct SettingsView: View {
             }
             .background(Theme.cream.ignoresSafeArea())
             .navigationBarHidden(true)
+            .onChange(of: sensitivity) { _ in pushSettings() }
+            .onChange(of: voiceLanguage) { _ in pushSettings() }
+            .onChange(of: voiceEnabled) { _ in pushSettings() }
+            .onChange(of: postureAlert) { _ in pushSettings() }
+            .onChange(of: focusAlert) { _ in pushSettings() }
         }
+    }
+
+    private func pushSettings() {
+        guard let uid = auth.currentUserId else { return }
+        let settings: [String: Any] = [
+            "alertSensitivity": sensitivity,
+            "voiceLanguage": voiceLanguage,
+            "voiceEnabled": voiceEnabled,
+            "postureAlertEnabled": postureAlert,
+            "focusAlertEnabled": focusAlert
+        ]
+        Task { try? await FirebaseService.shared.saveSettings(userId: uid, settings: settings) }
     }
 
     private var profileCard: some View {

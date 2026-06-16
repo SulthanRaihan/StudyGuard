@@ -10,6 +10,7 @@ import SwiftUI
 struct BadgesView: View {
     let sessions: [FirebaseService.SessionRecord]
     let currentStreak: Int
+    var userId: String? = nil
 
     private let columns = [GridItem(.adaptive(minimum: 150), spacing: 14)]
 
@@ -33,6 +34,13 @@ struct BadgesView: View {
         .background(Theme.cream.ignoresSafeArea())
         .navigationTitle("Badges")
         .navigationBarTitleDisplayMode(.inline)
+        .task { await persistUnlocked() }
+    }
+
+    private func persistUnlocked() async {
+        guard let userId else { return }
+        let unlocked = badges.filter(\.unlocked).map { (key: $0.key, name: $0.name, type: $0.type) }
+        await FirebaseService.shared.syncAchievements(userId: userId, unlocked: unlocked)
     }
 
     private func card(_ badge: Badge) -> some View {
@@ -66,6 +74,8 @@ struct BadgesView: View {
 
     private struct Badge: Identifiable {
         let id = UUID()
+        let key: String
+        let type: String
         let name: String
         let detail: String
         let icon: String
@@ -80,21 +90,29 @@ struct BadgesView: View {
         let mathCount = sessions.filter { $0.subject == "Mathematics" }.count
 
         return [
-            Badge(name: "First Session", detail: "Complete 1 session", icon: "star.fill",
+            Badge(key: "first_session", type: "milestone", name: "First Session",
+                  detail: "Complete 1 session", icon: "star.fill",
                   unlocked: count >= 1),
-            Badge(name: "Posture Perfect", detail: "Posture score ≥ 95", icon: "figure.stand",
+            Badge(key: "posture_perfect", type: "posture", name: "Posture Perfect",
+                  detail: "Posture score ≥ 95", icon: "figure.stand",
                   unlocked: sessions.contains { $0.postureScore >= 95 }),
-            Badge(name: "Deep Focus", detail: "60 min of high focus", icon: "brain.head.profile",
+            Badge(key: "deep_focus", type: "focus", name: "Deep Focus",
+                  detail: "60 min of high focus", icon: "brain.head.profile",
                   unlocked: sessions.contains { $0.totalSeconds >= 3600 && $0.focusScore >= 80 }),
-            Badge(name: "7-Day Streak", detail: "Study 7 days in a row", icon: "flame.fill",
+            Badge(key: "streak_7", type: "streak", name: "7-Day Streak",
+                  detail: "Study 7 days in a row", icon: "flame.fill",
                   unlocked: currentStreak >= 7),
-            Badge(name: "Early Bird", detail: "Start before 8 AM", icon: "sunrise.fill",
+            Badge(key: "early_bird", type: "milestone", name: "Early Bird",
+                  detail: "Start before 8 AM", icon: "sunrise.fill",
                   unlocked: sessions.contains { hour($0.endTime) < 8 }),
-            Badge(name: "Night Owl", detail: "Study after 10 PM", icon: "moon.stars.fill",
+            Badge(key: "night_owl", type: "milestone", name: "Night Owl",
+                  detail: "Study after 10 PM", icon: "moon.stars.fill",
                   unlocked: sessions.contains { hour($0.endTime) >= 22 }),
-            Badge(name: "Math Wizard", detail: "10 Mathematics sessions", icon: "function",
+            Badge(key: "math_wizard", type: "milestone", name: "Math Wizard",
+                  detail: "10 Mathematics sessions", icon: "function",
                   unlocked: mathCount >= 10),
-            Badge(name: "Study Marathon", detail: "One session ≥ 90 min", icon: "timer",
+            Badge(key: "study_marathon", type: "milestone", name: "Study Marathon",
+                  detail: "One session ≥ 90 min", icon: "timer",
                   unlocked: sessions.contains { $0.totalSeconds >= 5400 })
         ]
     }
