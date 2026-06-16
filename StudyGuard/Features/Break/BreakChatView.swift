@@ -24,7 +24,7 @@ struct BreakChatView: View {
                             if messages.isEmpty {
                                 Text("Ask me anything about \(subject) during your break. 🤓")
                                     .font(.callout)
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(Theme.muted)
                                     .frame(maxWidth: .infinity, alignment: .center)
                                     .padding(.top, 40)
                             }
@@ -51,6 +51,7 @@ struct BreakChatView: View {
 
                 inputBar
             }
+            .background(Theme.cream.ignoresSafeArea())
             .navigationTitle("Ask Guri")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -68,9 +69,9 @@ struct BreakChatView: View {
             if isUser { Spacer(minLength: 40) }
             Text(message.content)
                 .padding(12)
-                .background(isUser ? AnyShapeStyle(Color.accentColor) : AnyShapeStyle(.thinMaterial),
+                .background(isUser ? AnyShapeStyle(Theme.orange) : AnyShapeStyle(Color.white),
                            in: RoundedRectangle(cornerRadius: 14))
-                .foregroundStyle(isUser ? .white : .primary)
+                .foregroundStyle(isUser ? .white : Theme.navy)
             if !isUser { Spacer(minLength: 40) }
         }
     }
@@ -85,6 +86,7 @@ struct BreakChatView: View {
             } label: {
                 Image(systemName: "arrow.up.circle.fill")
                     .font(.title)
+                    .foregroundStyle(Theme.orange)
             }
             .disabled(input.trimmingCharacters(in: .whitespaces).isEmpty || isSending)
         }

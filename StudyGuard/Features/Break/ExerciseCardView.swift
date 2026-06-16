@@ -27,7 +27,7 @@ struct ExerciseCardView: View {
                 }
                 Label("\(exercise.duration)s · tap for demo", systemImage: "play.circle.fill")
                     .font(.caption2.weight(.semibold))
-                    .foregroundStyle(.tint)
+                    .foregroundStyle(Theme.orange)
             }
 
             Spacer()
@@ -40,7 +40,8 @@ struct ExerciseCardView: View {
             .buttonStyle(.plain)
         }
         .padding(16)
-        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 16))
+        .background(Color.white, in: RoundedRectangle(cornerRadius: 16))
+        .shadow(color: Theme.navy.opacity(0.05), radius: 6, y: 3)
         .opacity(isDone ? 0.6 : 1)
         .contentShape(Rectangle())
         .onTapGesture(perform: onTap)
@@ -56,7 +57,7 @@ struct ExerciseCardView: View {
         } else {
             Image(systemName: icon)
                 .font(.title2)
-                .foregroundStyle(.tint)
+                .foregroundStyle(Theme.orange)
                 .frame(width: 64, height: 64)
         }
     }
