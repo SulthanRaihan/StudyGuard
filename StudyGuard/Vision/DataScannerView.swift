@@ -12,6 +12,7 @@ struct DataScannerView: UIViewControllerRepresentable {
     @Binding var recognizedText: String
 
     /// Whether live scanning is available on this device (false on Simulator).
+    @MainActor
     static var isSupported: Bool {
         DataScannerViewController.isSupported && DataScannerViewController.isAvailable
     }
