@@ -12,6 +12,7 @@ struct HomeView: View {
 
     @State private var profile: FirebaseService.Profile?
     @State private var isLoading = true
+    @State private var showScan = false
 
     var body: some View {
         ScrollView {
@@ -21,12 +22,21 @@ struct HomeView: View {
                 statsRow
                 levelCard
                 startButton
+                scanButton
                 Color.clear.frame(height: 90) // clear the floating nav
             }
             .padding(20)
         }
         .background(Theme.cream.ignoresSafeArea())
         .task { await load() }
+        .fullScreenCover(isPresented: $showScan) { ScanView() }
+    }
+
+    private var scanButton: some View {
+        Button { showScan = true } label: {
+            Label("Scan & Solve a Problem", systemImage: "text.viewfinder")
+        }
+        .buttonStyle(.sgSecondary)
     }
 
     private var header: some View {

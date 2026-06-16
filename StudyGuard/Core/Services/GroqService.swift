@@ -63,6 +63,40 @@ final class GroqService {
         return try await complete(messages: [Message(role: "user", content: prompt)], maxTokens: 400)
     }
 
+    /// Solves/answers a problem captured by OCR or typed by the user.
+    func solveProblem(_ problem: String) async throws -> String {
+        let prompt = """
+        Solve or answer the following problem clearly and concisely, showing the key steps.
+        If it's a math problem, show the working. Use English.
+
+        Problem:
+        \(problem)
+        """
+        return try await complete(messages: [Message(role: "user", content: prompt)], maxTokens: 700)
+    }
+
+    /// Generates flashcards (Q&A) from study material.
+    func generateFlashcards(from text: String, count: Int = 6) async throws -> [Flashcard] {
+        let prompt = """
+        From the following study material, create \(count) flashcards for active recall.
+        Respond ONLY with a JSON array of objects with keys "question" and "answer". No prose.
+
+        Material:
+        \(text)
+        """
+        let raw = try await complete(messages: [Message(role: "user", content: prompt)], maxTokens: 900)
+        return Self.parseFlashcards(raw)
+    }
+
+    private static func parseFlashcards(_ text: String) -> [Flashcard] {
+        struct DTO: Decodable { let question: String; let answer: String }
+        guard let match = text.range(of: #"\[[\s\S]*\]"#, options: .regularExpression) else { return [] }
+        let json = String(text[match])
+        guard let data = json.data(using: .utf8),
+              let dtos = try? JSONDecoder().decode([DTO].self, from: data) else { return [] }
+        return dtos.map { Flashcard(question: $0.question, answer: $0.answer) }
+    }
+
     /// Break chat: answers a study question, given the running conversation.
     func breakChat(subject: String, history: [Message]) async throws -> String {
         let system = Message(role: "system", content: """
