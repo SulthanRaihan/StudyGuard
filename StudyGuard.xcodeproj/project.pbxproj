@@ -28,6 +28,7 @@
 		C36CC7B60FA8DF14C7DF14EB /* GroqService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CE882BF5DD03D1AB989492F /* GroqService.swift */; };
 		2F65833EACF864312E16FF4B /* ExerciseAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18C1D8C55973288D40C27E4 /* ExerciseAPIService.swift */; };
 		624C447065E100043973367E /* SessionSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DF388926821FD76A1E00D17 /* SessionSummaryView.swift */; };
+		FB515F0C16DBCBED4D7BB609 /* PostureOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1F79F844C975C5B734A6732 /* PostureOverlayView.swift */; };
 		03394CF303543D04757ABF03 /* ExerciseCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79341EF9E2A1A7A72D484D7F /* ExerciseCardView.swift */; };
 		B4AAB42CBDE584FD7B8A8C4A /* BreakChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 306FF293E9E36510B62CC198 /* BreakChatView.swift */; };
 		CC1B5726E6F197331006766B /* BreakView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B14ECDC28018882D83468EA6 /* BreakView.swift */; };
@@ -105,6 +106,7 @@
 		1CE882BF5DD03D1AB989492F /* GroqService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroqService.swift; sourceTree = "<group>"; };
 		C18C1D8C55973288D40C27E4 /* ExerciseAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseAPIService.swift; sourceTree = "<group>"; };
 		4DF388926821FD76A1E00D17 /* SessionSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionSummaryView.swift; sourceTree = "<group>"; };
+		D1F79F844C975C5B734A6732 /* PostureOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostureOverlayView.swift; sourceTree = "<group>"; };
 		79341EF9E2A1A7A72D484D7F /* ExerciseCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseCardView.swift; sourceTree = "<group>"; };
 		306FF293E9E36510B62CC198 /* BreakChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreakChatView.swift; sourceTree = "<group>"; };
 		B14ECDC28018882D83468EA6 /* BreakView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreakView.swift; sourceTree = "<group>"; };
@@ -214,6 +216,7 @@
 				48097BE89943C1AD9CEA4728 /* SessionView.swift */,
 				154BFD4AE1253807E746798C /* FocusScoreView.swift */,
 				4DF388926821FD76A1E00D17 /* SessionSummaryView.swift */,
+				D1F79F844C975C5B734A6732 /* PostureOverlayView.swift */,
 			);
 			path = Session;
 			sourceTree = "<group>";
@@ -579,6 +582,7 @@
 				C36CC7B60FA8DF14C7DF14EB /* GroqService.swift in Sources */,
 				2F65833EACF864312E16FF4B /* ExerciseAPIService.swift in Sources */,
 				624C447065E100043973367E /* SessionSummaryView.swift in Sources */,
+				FB515F0C16DBCBED4D7BB609 /* PostureOverlayView.swift in Sources */,
 				03394CF303543D04757ABF03 /* ExerciseCardView.swift in Sources */,
 				B4AAB42CBDE584FD7B8A8C4A /* BreakChatView.swift in Sources */,
 				CC1B5726E6F197331006766B /* BreakView.swift in Sources */,

@@ -26,6 +26,8 @@ final class PostureManager: ObservableObject {
     /// Set to the offending posture once it has been sustained past the
     /// sensitivity threshold; `nil` while posture is acceptable.
     @Published private(set) var activeAlert: PostureType?
+    /// Confident joints for the skeleton overlay (Vision-normalized coords).
+    @Published private(set) var joints: [String: CGPoint] = [:]
 
     /// Alert sensitivity (seconds of sustained bad posture before alerting).
     var sensitivity: AlertSensitivity = .medium
@@ -203,7 +205,8 @@ final class PostureManager: ObservableObject {
                 bodyDetected: true,
                 score: currentScore(),
                 dominant: currentDominant(),
-                alert: alert)
+                alert: alert,
+                joints: result.joints)
     }
 
     // MARK: - Temporal smoothing (inferenceQueue)
@@ -274,7 +277,8 @@ final class PostureManager: ObservableObject {
     // MARK: - Publishing
 
     private func publish(posture: PostureType?, confidence: Double, bodyDetected: Bool,
-                         score: Double, dominant: PostureType?, alert: PostureType?) {
+                         score: Double, dominant: PostureType?, alert: PostureType?,
+                         joints: [String: CGPoint] = [:]) {
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }
             self.currentPosture = posture
@@ -283,6 +287,7 @@ final class PostureManager: ObservableObject {
             self.postureScore = score
             self.dominantIssue = dominant
             self.activeAlert = alert
+            self.joints = joints
         }
     }
 }

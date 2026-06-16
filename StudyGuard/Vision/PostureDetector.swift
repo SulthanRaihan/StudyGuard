@@ -48,6 +48,22 @@ struct PostureResult {
     let type: PostureType
     let confidence: Double
     let features: PostureFeatures
+    /// Confident joints for the on-screen skeleton, in Vision-normalized coords
+    /// (origin bottom-left, y up). Keyed by joint name.
+    var joints: [String: CGPoint] = [:]
+}
+
+/// Bones to draw for the skeleton overlay (pairs of joint-name keys).
+enum PostureSkeleton {
+    static let bones: [(String, String)] = [
+        ("leftEar", "leftShoulder"), ("rightEar", "rightShoulder"),
+        ("nose", "neck"), ("neck", "leftShoulder"), ("neck", "rightShoulder"),
+        ("leftShoulder", "rightShoulder"),
+        ("leftShoulder", "leftElbow"), ("leftElbow", "leftWrist"),
+        ("rightShoulder", "rightElbow"), ("rightElbow", "rightWrist"),
+        ("neck", "root"), ("root", "leftHip"), ("root", "rightHip"),
+        ("leftShoulder", "leftHip"), ("rightShoulder", "rightHip")
+    ]
 }
 
 /// Runs Vision body-pose detection on a camera frame, derives the 24
@@ -76,7 +92,29 @@ final class PostureDetector {
         guard let keypoints = try extractKeypoints(from: observation) else { return nil }
 
         let features = computeFeatures(keypoints)
-        return try classify(features)
+        var result = try classify(features)
+        result.joints = displayJoints(from: observation)
+        return result
+    }
+
+    /// Confident joints (original Vision coords, y up) for the skeleton overlay.
+    private func displayJoints(from observation: VNHumanBodyPoseObservation) -> [String: CGPoint] {
+        let map: [(VNHumanBodyPoseObservation.JointName, String)] = [
+            (.nose, "nose"), (.neck, "neck"), (.root, "root"),
+            (.leftEar, "leftEar"), (.rightEar, "rightEar"),
+            (.leftShoulder, "leftShoulder"), (.rightShoulder, "rightShoulder"),
+            (.leftElbow, "leftElbow"), (.rightElbow, "rightElbow"),
+            (.leftWrist, "leftWrist"), (.rightWrist, "rightWrist"),
+            (.leftHip, "leftHip"), (.rightHip, "rightHip")
+        ]
+        guard let recognized = try? observation.recognizedPoints(.all) else { return [:] }
+        var out: [String: CGPoint] = [:]
+        for (joint, key) in map {
+            if let point = recognized[joint], point.confidence >= minJointConfidence {
+                out[key] = point.location
+            }
+        }
+        return out
     }
 
     // MARK: - Keypoint extraction

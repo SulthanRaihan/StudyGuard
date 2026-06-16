@@ -29,6 +29,9 @@ struct SessionView: View {
     var body: some View {
         ZStack {
             cameraLayer
+            if posture.isBodyDetected {
+                PostureOverlayView(joints: posture.joints).ignoresSafeArea()
+            }
             overlay
             if case .calibrating = session.phase { calibratingOverlay }
             if case .paused = session.phase { pausedOverlay }
