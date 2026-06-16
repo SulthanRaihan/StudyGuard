@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		05B39AD61D8377C74113F05C /* BreakExercise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54B4CD4745E9B85968858E35 /* BreakExercise.swift */; };
+		DD3144BDE247E3354CC1C93D /* Flashcard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96CEB4E36BAAD672D8D685F3 /* Flashcard.swift */; };
+		6D41EDC51061EB611585F90A /* DataScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68BAA2566E2B4E45EA07CB84 /* DataScannerView.swift */; };
+		64C3FF444B39CFEF296FB7E7 /* ScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5495805201A8DE8052472080 /* ScanView.swift */; };
+		E0A6150ED5CEB1957E086860 /* FlashcardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C391E3D5C7965A534E92E829 /* FlashcardsView.swift */; };
 		12A26B166B7B4F4B50F76BB0 /* StudySession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F437C8ADD353EE04FE086F8 /* StudySession.swift */; };
 		24FC58C6476EFFC026D22947 /* FocusSample.swift in Sources */ = {isa = PBXBuildFile; fileRef = C44042E43714C4527CE79F26 /* FocusSample.swift */; };
 		251A17E216BB59EC0AFE5BF4 /* CameraPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F3458890067097EE0AAF3C /* CameraPreviewView.swift */; };
@@ -94,6 +98,10 @@
 		7ACCF193878B39810B88AAA2 /* PostureDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostureDetector.swift; sourceTree = "<group>"; };
 		BC61643B39D4585B5330A5A0 /* PostureManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostureManager.swift; sourceTree = "<group>"; };
 		72100A898E3DD23F425C3196 /* FocusDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusDetector.swift; sourceTree = "<group>"; };
+		96CEB4E36BAAD672D8D685F3 /* Flashcard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Flashcard.swift; sourceTree = "<group>"; };
+		68BAA2566E2B4E45EA07CB84 /* DataScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataScannerView.swift; sourceTree = "<group>"; };
+		5495805201A8DE8052472080 /* ScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanView.swift; sourceTree = "<group>"; };
+		C391E3D5C7965A534E92E829 /* FlashcardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlashcardsView.swift; sourceTree = "<group>"; };
 		1957106DA103537804C9694A /* FocusManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusManager.swift; sourceTree = "<group>"; };
 		5BF5E28D4C88A9152DBCA152 /* VoiceAlertService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceAlertService.swift; sourceTree = "<group>"; };
 		2408FC9CFB325E70A99F2997 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
@@ -183,6 +191,7 @@
 				C44042E43714C4527CE79F26 /* FocusSample.swift */,
 				54B4CD4745E9B85968858E35 /* BreakExercise.swift */,
 				B9D4A9C06C2F2D2824D0A01C /* SessionResult.swift */,
+				96CEB4E36BAAD672D8D685F3 /* Flashcard.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -197,6 +206,7 @@
 				ABED69838E595B1B194431F7 /* Main */,
 				61484D0E4BAAC449C79AB861 /* PreSession */,
 				846FFA1773787F5E8E6AEB1F /* Session */,
+				066F8E19DDEC7CF6E4C72821 /* Scan */,
 				2BA4359B04FA958C42613192 /* Settings */,
 			);
 			path = Features;
@@ -239,6 +249,7 @@
 				7ACCF193878B39810B88AAA2 /* PostureDetector.swift */,
 				03F3458890067097EE0AAF3C /* CameraPreviewView.swift */,
 				72100A898E3DD23F425C3196 /* FocusDetector.swift */,
+				68BAA2566E2B4E45EA07CB84 /* DataScannerView.swift */,
 			);
 			path = Vision;
 			sourceTree = "<group>";
@@ -374,6 +385,15 @@
 				BFAB0DEC66D643CB49690EC4 /* SettingsView.swift */,
 			);
 			path = Settings;
+			sourceTree = "<group>";
+		};
+		066F8E19DDEC7CF6E4C72821 /* Scan */ = {
+			isa = PBXGroup;
+			children = (
+				5495805201A8DE8052472080 /* ScanView.swift */,
+				C391E3D5C7965A534E92E829 /* FlashcardsView.swift */,
+			);
+			path = Scan;
 			sourceTree = "<group>";
 		};
 		ABED69838E595B1B194431F7 /* Main */ = {
@@ -563,6 +583,10 @@
 				F80F55EA67572ED28171ACCD /* FocusEvent.swift in Sources */,
 				24FC58C6476EFFC026D22947 /* FocusSample.swift in Sources */,
 				05B39AD61D8377C74113F05C /* BreakExercise.swift in Sources */,
+				DD3144BDE247E3354CC1C93D /* Flashcard.swift in Sources */,
+				6D41EDC51061EB611585F90A /* DataScannerView.swift in Sources */,
+				64C3FF444B39CFEF296FB7E7 /* ScanView.swift in Sources */,
+				E0A6150ED5CEB1957E086860 /* FlashcardsView.swift in Sources */,
 				25CAAC6413061F9A66B823DD /* CameraManager.swift in Sources */,
 				714B4D1E1731FE700C733738 /* PostureDetector.swift in Sources */,
 				251A17E216BB59EC0AFE5BF4 /* CameraPreviewView.swift in Sources */,
