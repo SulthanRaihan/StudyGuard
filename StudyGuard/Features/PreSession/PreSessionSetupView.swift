@@ -27,9 +27,10 @@ struct PreSessionSetupView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("What are you studying?")
                     .font(.largeTitle.bold())
+                    .foregroundStyle(Theme.navy)
                 Text("Pick a subject and your session length.")
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Theme.muted)
             }
 
             LazyVGrid(columns: columns, spacing: 12) {
@@ -43,6 +44,7 @@ struct PreSessionSetupView: View {
             VStack(alignment: .leading, spacing: 10) {
                 Text("Duration")
                     .font(.headline)
+                    .foregroundStyle(Theme.navy)
                 HStack(spacing: 12) {
                     ForEach(durations, id: \.self) { minutes in
                         durationButton(minutes)
@@ -72,10 +74,10 @@ struct PreSessionSetupView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
                 .background(
-                    isSelected ? AnyShapeStyle(Color.accentColor) : AnyShapeStyle(.thinMaterial),
+                    isSelected ? AnyShapeStyle(Theme.orange) : AnyShapeStyle(Color.white),
                     in: RoundedRectangle(cornerRadius: 12)
                 )
-                .foregroundStyle(isSelected ? .white : .primary)
+                .foregroundStyle(isSelected ? .white : Theme.navy)
         }
         .buttonStyle(.plain)
     }
@@ -94,10 +96,10 @@ struct PreSessionSetupView: View {
             .frame(maxWidth: .infinity)
             .padding(.vertical, 14)
             .background(
-                isSelected ? AnyShapeStyle(Color.accentColor) : AnyShapeStyle(.thinMaterial),
+                isSelected ? AnyShapeStyle(Theme.orange) : AnyShapeStyle(Color.white),
                 in: RoundedRectangle(cornerRadius: 12)
             )
-            .foregroundStyle(isSelected ? .white : .primary)
+            .foregroundStyle(isSelected ? .white : Theme.navy)
         }
         .buttonStyle(.plain)
     }
