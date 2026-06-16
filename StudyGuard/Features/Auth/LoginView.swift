@@ -62,6 +62,18 @@ struct LoginView: View {
                 .buttonStyle(.sgPrimary)
                 .disabled(!canSubmit)
 
+                Button {
+                    Task { await auth.signInWithGoogle() }
+                } label: {
+                    Label("Continue with Google", systemImage: "globe")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity).padding(.vertical, 16)
+                        .background(.white, in: RoundedRectangle(cornerRadius: 16))
+                        .foregroundStyle(Theme.navy)
+                        .overlay(RoundedRectangle(cornerRadius: 16).stroke(Theme.navy.opacity(0.15)))
+                }
+                .disabled(auth.isBusy)
+
                 Button("Don't have an account? Sign Up", action: onRegister)
                     .font(.subheadline)
                     .foregroundStyle(Theme.orange)

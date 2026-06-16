@@ -9,6 +9,7 @@ import SwiftUI
 struct OnboardingView: View {
     let onSignUp: () -> Void
     let onSignIn: () -> Void
+    var onGoogle: () -> Void = {}
 
     var body: some View {
         ZStack {
@@ -38,6 +39,14 @@ struct OnboardingView: View {
                         .buttonStyle(.sgPrimary)
                     Button("Sign In", action: onSignIn)
                         .buttonStyle(.sgSecondary)
+                    Button(action: onGoogle) {
+                        Label("Continue with Google", systemImage: "globe")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity).padding(.vertical, 16)
+                            .background(.white, in: RoundedRectangle(cornerRadius: 16))
+                            .foregroundStyle(Theme.navy)
+                            .overlay(RoundedRectangle(cornerRadius: 16).stroke(Theme.navy.opacity(0.15)))
+                    }
                 }
             }
             .padding(28)

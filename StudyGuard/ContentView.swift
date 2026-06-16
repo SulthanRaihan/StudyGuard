@@ -28,7 +28,11 @@ private struct AuthFlow: View {
     var body: some View {
         switch screen {
         case .onboarding:
-            OnboardingView(onSignUp: { screen = .register }, onSignIn: { screen = .login })
+            OnboardingView(
+                onSignUp: { screen = .register },
+                onSignIn: { screen = .login },
+                onGoogle: { Task { await auth.signInWithGoogle() } }
+            )
         case .login:
             LoginView(auth: auth) { screen = .register }
         case .register:

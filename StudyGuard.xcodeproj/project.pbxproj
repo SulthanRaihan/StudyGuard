@@ -758,6 +758,7 @@
 				DEVELOPMENT_TEAM = CT956VYJQ9;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = StudyGuard/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "StudyGuard menggunakan kamera depan untuk memantau postur dan fokus kamu selama sesi belajar.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -788,6 +789,7 @@
 				DEVELOPMENT_TEAM = CT956VYJQ9;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = StudyGuard/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "StudyGuard menggunakan kamera depan untuk memantau postur dan fokus kamu selama sesi belajar.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
