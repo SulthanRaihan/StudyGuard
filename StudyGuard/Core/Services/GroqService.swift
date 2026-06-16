@@ -97,6 +97,52 @@ final class GroqService {
         return dtos.map { Flashcard(question: $0.question, answer: $0.answer) }
     }
 
+    /// Generates an adaptive multi-day study plan.
+    func generateStudyPlan(subjects: [String], days: Int, hoursPerDay: Int,
+                           bestFocusHour: Int?) async throws -> [StudyPlanDay] {
+        let focusNote = bestFocusHour.map {
+            "The student focuses best around \($0):00 — schedule the most demanding subjects around then."
+        } ?? ""
+        let prompt = """
+        Create a \(days)-day study plan for these subjects: \(subjects.joined(separator: ", ")).
+        Aim for about \(hoursPerDay) hour(s) per day, split into focused blocks.
+        \(focusNote)
+        Respond ONLY with a JSON array of \(days) objects, each:
+        {"day":"Day 1","tasks":[{"subject":"Math","activity":"Review derivatives","minutes":30}]}
+        No prose.
+        """
+        let raw = try await complete(messages: [Message(role: "user", content: prompt)], maxTokens: 1200)
+        return Self.parsePlan(raw)
+    }
+
+    private static func parsePlan(_ text: String) -> [StudyPlanDay] {
+        guard let match = text.range(of: #"\[[\s\S]*\]"#, options: .regularExpression) else { return [] }
+        let json = String(text[match])
+        guard let data = json.data(using: .utf8),
+              let days = try? JSONDecoder().decode([StudyPlanDay].self, from: data) else { return [] }
+        return days
+    }
+
+    /// A short narrative weekly report from the week's aggregated stats.
+    func weeklyReport(sessions: Int, totalMinutes: Int, avgFocus: Int, avgPosture: Int,
+                      bestFocusHour: Int?, weakestSubject: String?) async throws -> String {
+        let focusNote = bestFocusHour.map { "Best focus time: around \($0):00." } ?? ""
+        let weakNote = weakestSubject.map { "Weakest subject (lowest focus): \($0)." } ?? ""
+        let prompt = """
+        Write a short, encouraging weekly study report (max 120 words, English).
+
+        Sessions this week: \(sessions)
+        Total study time: \(totalMinutes) minutes
+        Average focus: \(avgFocus)%
+        Average posture: \(avgPosture)%
+        \(focusNote)
+        \(weakNote)
+
+        Summarize the week and give 2 concrete suggestions for next week.
+        """
+        return try await complete(messages: [Message(role: "user", content: prompt)], maxTokens: 300)
+    }
+
     /// Break chat: answers a study question, given the running conversation.
     func breakChat(subject: String, history: [Message]) async throws -> String {
         let system = Message(role: "system", content: """

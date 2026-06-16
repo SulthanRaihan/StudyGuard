@@ -18,9 +18,8 @@ struct HomeView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 header
-                buddyBanner
+                guriGrowthCard
                 statsRow
-                levelCard
                 startButton
                 scanButton
                 Color.clear.frame(height: 90) // clear the floating nav
@@ -52,21 +51,60 @@ struct HomeView: View {
         }
     }
 
-    private var buddyBanner: some View {
-        HStack(spacing: 14) {
-            BrandImage(name: "GuriCelebrate", fallbackSystemName: "sparkles")
-                .frame(width: 56, height: 56)
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Your study buddy, Guri 🐱")
-                    .font(.caption).foregroundStyle(Theme.muted)
-                Text("Let's keep your posture & focus sharp today!")
-                    .font(.headline).foregroundStyle(Theme.navy)
+    private var guriGrowthCard: some View {
+        let xp = profile?.totalXP ?? 0
+        let level = profile?.level ?? .beginner
+        return VStack(spacing: 12) {
+            HStack(spacing: 14) {
+                BrandImage(name: guriImage(for: level), fallbackSystemName: "graduationcap.fill")
+                    .frame(width: 60, height: 60)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Guri · \(level.rawValue)").font(.headline).foregroundStyle(Theme.navy)
+                    Text(growthMessage(for: xp)).font(.caption).foregroundStyle(Theme.muted)
+                }
+                Spacer()
             }
-            Spacer()
+            ProgressView(value: levelProgress(xp))
+                .tint(Theme.orange)
+            Text(nextLevelText(xp)).font(.caption2).foregroundStyle(Theme.muted)
+                .frame(maxWidth: .infinity, alignment: .trailing)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(18)
-        .background(Theme.orange.opacity(0.12), in: RoundedRectangle(cornerRadius: 20))
+        .sgCard()
+    }
+
+    private func guriImage(for level: StudyLevel) -> String {
+        switch level {
+        case .beginner: return "GuriHi"
+        case .scholar: return "GuriBreak"
+        case .eliteScholar: return "GuriCelebrate"
+        }
+    }
+
+    private func growthMessage(for xp: Int) -> String {
+        switch xp {
+        case 0: return "Start a session to help Guri grow! 🐱"
+        case ..<500: return "Guri is getting stronger — keep going!"
+        case ..<2000: return "Guri is proud of your progress! 🎓"
+        default: return "Elite scholar — Guri is thriving! 🌟"
+        }
+    }
+
+    /// Progress (0–1) through the current XP tier.
+    private func levelProgress(_ xp: Int) -> Double {
+        switch xp {
+        case ..<500: return Double(xp) / 500
+        case ..<2000: return Double(xp - 500) / 1500
+        default: return 1
+        }
+    }
+
+    private func nextLevelText(_ xp: Int) -> String {
+        switch xp {
+        case ..<500: return "\(500 - xp) XP to Scholar"
+        case ..<2000: return "\(2000 - xp) XP to Elite Scholar"
+        default: return "Max level reached"
+        }
     }
 
     private var statsRow: some View {
@@ -84,20 +122,6 @@ struct HomeView: View {
             Text(value).font(.title.bold()).foregroundStyle(Theme.navy)
                 .redacted(reason: isLoading ? .placeholder : [])
             Text(label).font(.caption).foregroundStyle(Theme.muted)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .sgCard()
-    }
-
-    private var levelCard: some View {
-        HStack(spacing: 14) {
-            Image(systemName: "graduationcap.fill").font(.title).foregroundStyle(Theme.orange)
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Study level").font(.caption).foregroundStyle(Theme.muted)
-                Text((profile?.level ?? .beginner).rawValue)
-                    .font(.title3.bold()).foregroundStyle(Theme.navy)
-            }
-            Spacer()
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .sgCard()

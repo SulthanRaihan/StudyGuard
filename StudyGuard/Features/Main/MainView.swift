@@ -15,7 +15,7 @@ struct MainView: View {
     @State private var summaryResult: SessionResult?
     @State private var showSetup = false
 
-    enum Tab: Int { case home, stats, settings }
+    enum Tab: Int { case home, plan, stats, settings }
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -59,6 +59,7 @@ struct MainView: View {
         } else {
             switch tab {
             case .home: HomeView(auth: auth) { showSetup = true }
+            case .plan: PlannerView(auth: auth)
             case .stats: DashboardView(auth: auth)
             case .settings: SettingsView(auth: auth)
             }
@@ -74,6 +75,7 @@ struct MainView: View {
     private var pillNav: some View {
         HStack(spacing: 8) {
             navItem(.home, "house.fill", "Home")
+            navItem(.plan, "calendar", "Plan")
             navItem(.stats, "chart.bar.fill", "Stats")
             navItem(.settings, "gearshape.fill", "Settings")
         }
