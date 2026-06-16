@@ -30,6 +30,7 @@
 		624C447065E100043973367E /* SessionSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DF388926821FD76A1E00D17 /* SessionSummaryView.swift */; };
 		FB515F0C16DBCBED4D7BB609 /* PostureOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1F79F844C975C5B734A6732 /* PostureOverlayView.swift */; };
 		03394CF303543D04757ABF03 /* ExerciseCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79341EF9E2A1A7A72D484D7F /* ExerciseCardView.swift */; };
+		1F2F842EFEA75CDBC8E31F01 /* ExerciseDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED914B618EFE9E83BCCE5395 /* ExerciseDetailView.swift */; };
 		B4AAB42CBDE584FD7B8A8C4A /* BreakChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 306FF293E9E36510B62CC198 /* BreakChatView.swift */; };
 		CC1B5726E6F197331006766B /* BreakView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B14ECDC28018882D83468EA6 /* BreakView.swift */; };
 		D654A92EF05BFAE7535210D2 /* AnimatedGIFView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69D08DFCCE9C0B63A62B3D17 /* AnimatedGIFView.swift */; };
@@ -108,6 +109,7 @@
 		4DF388926821FD76A1E00D17 /* SessionSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionSummaryView.swift; sourceTree = "<group>"; };
 		D1F79F844C975C5B734A6732 /* PostureOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostureOverlayView.swift; sourceTree = "<group>"; };
 		79341EF9E2A1A7A72D484D7F /* ExerciseCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseCardView.swift; sourceTree = "<group>"; };
+		ED914B618EFE9E83BCCE5395 /* ExerciseDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseDetailView.swift; sourceTree = "<group>"; };
 		306FF293E9E36510B62CC198 /* BreakChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreakChatView.swift; sourceTree = "<group>"; };
 		B14ECDC28018882D83468EA6 /* BreakView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreakView.swift; sourceTree = "<group>"; };
 		69D08DFCCE9C0B63A62B3D17 /* AnimatedGIFView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedGIFView.swift; sourceTree = "<group>"; };
@@ -387,6 +389,7 @@
 			children = (
 				B14ECDC28018882D83468EA6 /* BreakView.swift */,
 				79341EF9E2A1A7A72D484D7F /* ExerciseCardView.swift */,
+				ED914B618EFE9E83BCCE5395 /* ExerciseDetailView.swift */,
 				306FF293E9E36510B62CC198 /* BreakChatView.swift */,
 				69D08DFCCE9C0B63A62B3D17 /* AnimatedGIFView.swift */,
 			);
@@ -584,6 +587,7 @@
 				624C447065E100043973367E /* SessionSummaryView.swift in Sources */,
 				FB515F0C16DBCBED4D7BB609 /* PostureOverlayView.swift in Sources */,
 				03394CF303543D04757ABF03 /* ExerciseCardView.swift in Sources */,
+				1F2F842EFEA75CDBC8E31F01 /* ExerciseDetailView.swift in Sources */,
 				B4AAB42CBDE584FD7B8A8C4A /* BreakChatView.swift in Sources */,
 				CC1B5726E6F197331006766B /* BreakView.swift in Sources */,
 				D654A92EF05BFAE7535210D2 /* AnimatedGIFView.swift in Sources */,

@@ -17,6 +17,7 @@ struct BreakView: View {
     @State private var doneIDs: Set<String> = []
     @State private var remaining: Int
     @State private var showChat = false
+    @State private var detailExercise: BreakExercise?
     @State private var timer: Timer?
 
     init(result: SessionResult, isMidSession: Bool = false, onDone: @escaping () -> Void) {
@@ -35,9 +36,12 @@ struct BreakView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Stretches for you").font(.headline).foregroundStyle(Theme.navy)
                     ForEach(exercises) { exercise in
-                        ExerciseCardView(exercise: exercise, isDone: doneIDs.contains(exercise.id)) {
-                            toggle(exercise)
-                        }
+                        ExerciseCardView(
+                            exercise: exercise,
+                            isDone: doneIDs.contains(exercise.id),
+                            onToggle: { toggle(exercise) },
+                            onTap: { detailExercise = exercise }
+                        )
                     }
                 }
 
@@ -66,6 +70,9 @@ struct BreakView: View {
         }
         .sheet(isPresented: $showChat) {
             BreakChatView(subject: result.subject)
+        }
+        .sheet(item: $detailExercise) { exercise in
+            ExerciseDetailView(exercise: exercise)
         }
     }
 

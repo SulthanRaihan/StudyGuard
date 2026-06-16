@@ -10,6 +10,7 @@ struct ExerciseCardView: View {
     let exercise: BreakExercise
     let isDone: Bool
     let onToggle: () -> Void
+    var onTap: () -> Void = {}
 
     var body: some View {
         HStack(spacing: 14) {
@@ -22,9 +23,9 @@ struct ExerciseCardView: View {
                     Text(instructions)
                         .font(.caption)
                         .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
+                        .lineLimit(2)
                 }
-                Text("\(exercise.duration) seconds")
+                Label("\(exercise.duration)s · tap for demo", systemImage: "play.circle.fill")
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(.tint)
             }
@@ -41,6 +42,8 @@ struct ExerciseCardView: View {
         .padding(16)
         .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 16))
         .opacity(isDone ? 0.6 : 1)
+        .contentShape(Rectangle())
+        .onTapGesture(perform: onTap)
     }
 
     @ViewBuilder
