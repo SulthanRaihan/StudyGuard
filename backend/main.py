@@ -12,12 +12,14 @@ Run:
 from dotenv import load_dotenv
 from fastapi import FastAPI
 
+import a2a
 from agents import run_agents
 from models import AnalysisResponse, SessionPayload
 
 load_dotenv()
 
 app = FastAPI(title="StudyGuard Agents", version="1.0")
+app.include_router(a2a.router)  # A2A: /.well-known/agent.json + /a2a
 
 
 @app.get("/")
