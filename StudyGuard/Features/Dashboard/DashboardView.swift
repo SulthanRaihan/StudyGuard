@@ -13,6 +13,9 @@ struct DashboardView: View {
     @State private var sessions: [FirebaseService.SessionRecord] = []
     @State private var profile: FirebaseService.Profile?
     @State private var isLoading = true
+    @State private var report: String?
+    @State private var reportLoading = false
+    @State private var reportError: String?
 
     var body: some View {
         NavigationStack {
@@ -21,6 +24,7 @@ struct DashboardView: View {
                     header
                     tiles
                     weeklyChart
+                    weeklyReportCard
                     recentSessions
                     subjectBreakdown
                     badgesLink
@@ -41,6 +45,52 @@ struct DashboardView: View {
             Text("Learning Overview")
                 .font(.largeTitle.bold()).foregroundStyle(Theme.navy)
         }
+    }
+
+    private var weeklyReportCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Label("Weekly Report", systemImage: "doc.text.magnifyingglass")
+                .font(.headline).foregroundStyle(Theme.orange)
+
+            if let report {
+                Text(report).font(.callout).foregroundStyle(Theme.navy)
+                    .fixedSize(horizontal: false, vertical: true)
+            } else if let reportError {
+                Text(reportError).font(.caption).foregroundStyle(.red)
+            } else {
+                Text("Get an AI summary of your week with tips for the next one.")
+                    .font(.caption).foregroundStyle(Theme.muted)
+            }
+
+            Button { Task { await generateReport() } } label: {
+                if reportLoading { ProgressView().tint(.white) }
+                else { Label(report == nil ? "Generate report" : "Regenerate", systemImage: "sparkles") }
+            }
+            .buttonStyle(.sgSecondary)
+            .disabled(reportLoading || sessions.isEmpty)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .sgCard()
+    }
+
+    private func generateReport() async {
+        reportError = nil; reportLoading = true
+        let calendar = Calendar.current
+        let weekStart = calendar.date(byAdding: .day, value: -7, to: Date()) ?? Date()
+        let week = sessions.filter { $0.endTime >= weekStart }
+        let total = week.reduce(0) { $0 + $1.totalSeconds } / 60
+        let avgF = week.isEmpty ? 0 : Int(week.map(\.focusScore).reduce(0, +) / Double(week.count))
+        let avgP = week.isEmpty ? 0 : Int(week.map(\.postureScore).reduce(0, +) / Double(week.count))
+        do {
+            report = try await GroqService.shared.weeklyReport(
+                sessions: week.count, totalMinutes: total, avgFocus: avgF, avgPosture: avgP,
+                bestFocusHour: SessionStats.bestFocusHour(week),
+                weakestSubject: SessionStats.weakestSubject(week)
+            )
+        } catch {
+            reportError = error.localizedDescription
+        }
+        reportLoading = false
     }
 
     private var tiles: some View {

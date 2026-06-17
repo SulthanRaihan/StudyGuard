@@ -92,6 +92,22 @@ final class FirebaseService {
         return snapshot.data()?["settings"] as? [String: Any]
     }
 
+    // MARK: - Study plan
+
+    func saveStudyPlan(userId: String, days: [StudyPlanDay]) async {
+        guard let data = try? JSONEncoder().encode(days),
+              let json = String(data: data, encoding: .utf8) else { return }
+        try? await db.collection("users").document(userId).setData(["studyPlan": json], merge: true)
+    }
+
+    func fetchStudyPlan(userId: String) async -> [StudyPlanDay] {
+        guard let snapshot = try? await db.collection("users").document(userId).getDocument(),
+              let json = snapshot.data()?["studyPlan"] as? String,
+              let data = json.data(using: .utf8),
+              let days = try? JSONDecoder().decode([StudyPlanDay].self, from: data) else { return [] }
+        return days
+    }
+
     // MARK: - Achievements
 
     /// Records any newly-unlocked badges in the user document (keyed map), stamping
@@ -203,5 +219,26 @@ final class FirebaseService {
         ])
 
         return xpEarned
+    }
+}
+
+/// Derived insights over a set of past sessions (for the planner & weekly report).
+enum SessionStats {
+    /// Hour of day (0–23) with the highest average focus.
+    static func bestFocusHour(_ sessions: [FirebaseService.SessionRecord]) -> Int? {
+        guard !sessions.isEmpty else { return nil }
+        let calendar = Calendar.current
+        let byHour = Dictionary(grouping: sessions) { calendar.component(.hour, from: $0.endTime) }
+        let avg = byHour.mapValues { $0.map(\.focusScore).reduce(0, +) / Double($0.count) }
+        return avg.max { $0.value < $1.value }?.key
+    }
+
+    /// Subject with the lowest average focus.
+    static func weakestSubject(_ sessions: [FirebaseService.SessionRecord]) -> String? {
+        let named = sessions.filter { !$0.subject.isEmpty }
+        guard !named.isEmpty else { return nil }
+        let bySubject = Dictionary(grouping: named, by: \.subject)
+        let avg = bySubject.mapValues { $0.map(\.focusScore).reduce(0, +) / Double($0.count) }
+        return avg.min { $0.value < $1.value }?.key
     }
 }

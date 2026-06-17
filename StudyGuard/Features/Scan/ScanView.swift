@@ -46,7 +46,7 @@ struct ScanView: View {
 
     // MARK: - Scanner
 
-    @ViewBuilder
+    @MainActor @ViewBuilder
     private var scannerArea: some View {
         if DataScannerView.isSupported {
             ZStack(alignment: .top) {
