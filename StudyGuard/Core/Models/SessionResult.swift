@@ -7,6 +7,7 @@ import Foundation
 
 /// A finished session's data, used to drive the summary, break, and persistence.
 struct SessionResult {
+    var sessionId: String = UUID().uuidString
     let subject: String
     let totalSeconds: Int
     let targetMinutes: Int

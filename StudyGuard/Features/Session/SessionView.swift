@@ -12,6 +12,7 @@ struct SessionView: View {
     @ObservedObject private var camera: CameraManager
     @ObservedObject private var posture: PostureManager
     @ObservedObject private var focus: FocusManager
+    @ObservedObject private var sound = FocusSoundService.shared
 
     /// Called with the session's result when the user leaves the finished session.
     let onFinish: (SessionResult) -> Void
@@ -38,9 +39,12 @@ struct SessionView: View {
             if case let .finished(reason) = session.phase { finishedOverlay(reason: reason) }
         }
         .onAppear(perform: start)
-        .onDisappear { session.end() }
+        .onDisappear {
+            session.end()
+            sound.stop()
+        }
         .fullScreenCover(isPresented: $showBreak) {
-            BreakView(result: session.makeResult(), isMidSession: true) {
+            BreakView(result: session.makeResult(), isMidSession: true, userId: session.userId) {
                 showBreak = false
                 session.resume()
             }
@@ -106,6 +110,15 @@ struct SessionView: View {
                 .font(.system(size: 30, weight: .bold, design: .rounded).monospacedDigit())
                 .foregroundStyle(.white)
             Spacer()
+            Button {
+                sound.toggle()
+            } label: {
+                Image(systemName: sound.isPlaying ? "speaker.wave.2.fill" : "speaker.slash.fill")
+                    .font(.title3)
+                    .padding(10)
+                    .background(.white.opacity(0.18), in: Circle())
+                    .foregroundStyle(.white)
+            }
             Button {
                 session.pause()
             } label: {

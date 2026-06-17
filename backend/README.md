@@ -38,6 +38,24 @@ Health check: open http://localhost:8000 → `{"status":"ok"}`.
 
 Response: `{ posture, focus, exercises[], narrative }`.
 
+## A2A (Agent2Agent) interface
+
+The agent is also exposed over A2A so other agents/frameworks can discover and call it:
+
+- `GET /.well-known/agent.json` — the Agent Card (capabilities + skills)
+- `POST /a2a` — JSON-RPC 2.0 `message/send` (pass the session payload as a `data` part)
+
+Example:
+```bash
+curl http://localhost:8000/.well-known/agent.json
+
+curl -X POST http://localhost:8000/a2a -H 'Content-Type: application/json' -d '{
+  "jsonrpc":"2.0","id":"1","method":"message/send",
+  "params":{"message":{"role":"user","parts":[{"kind":"data","data":{
+    "subject":"Mathematics","duration_minutes":25,"posture_score":82,"focus_score":74,
+    "dominant_issue":"TLF","focus_timeline":[90,80,60],"break_minutes":5}}]}}}'
+```
+
 ## Point the iOS app at it
 
 The iOS app reads `AgentBackendURL` from `Secrets.plist` (gitignored). Add:

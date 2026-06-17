@@ -23,6 +23,7 @@
 		C7E934C252ACA0265B381984 /* FocusDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72100A898E3DD23F425C3196 /* FocusDetector.swift */; };
 		82A707156A95AFA259E79E59 /* FocusManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1957106DA103537804C9694A /* FocusManager.swift */; };
 		02BCF6E2F86D522F58CC5E64 /* VoiceAlertService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BF5E28D4C88A9152DBCA152 /* VoiceAlertService.swift */; };
+		AF35B1B3862F4749784D8EE2 /* FocusSoundService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12AAAC583EE3F6EA12604B5D /* FocusSoundService.swift */; };
 		AD14026CF98C778B28812E75 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2408FC9CFB325E70A99F2997 /* AuthService.swift */; };
 		FC023F1AB6E6916C0E040B6C /* FirebaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9479033F5E033C59C81102A2 /* FirebaseService.swift */; };
 		95C9AD8F0725187B31D416CA /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C99F8EBF5D9153A7AE432E9 /* NotificationService.swift */; };
@@ -106,6 +107,7 @@
 		C391E3D5C7965A534E92E829 /* FlashcardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlashcardsView.swift; sourceTree = "<group>"; };
 		1957106DA103537804C9694A /* FocusManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusManager.swift; sourceTree = "<group>"; };
 		5BF5E28D4C88A9152DBCA152 /* VoiceAlertService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceAlertService.swift; sourceTree = "<group>"; };
+		12AAAC583EE3F6EA12604B5D /* FocusSoundService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusSoundService.swift; sourceTree = "<group>"; };
 		2408FC9CFB325E70A99F2997 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
 		9479033F5E033C59C81102A2 /* FirebaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseService.swift; sourceTree = "<group>"; };
 		3C99F8EBF5D9153A7AE432E9 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
@@ -348,6 +350,7 @@
 				2408FC9CFB325E70A99F2997 /* AuthService.swift */,
 				9479033F5E033C59C81102A2 /* FirebaseService.swift */,
 				5BF5E28D4C88A9152DBCA152 /* VoiceAlertService.swift */,
+				12AAAC583EE3F6EA12604B5D /* FocusSoundService.swift */,
 				1CE882BF5DD03D1AB989492F /* GroqService.swift */,
 				C18C1D8C55973288D40C27E4 /* ExerciseAPIService.swift */,
 				3C99F8EBF5D9153A7AE432E9 /* NotificationService.swift */,
@@ -612,6 +615,7 @@
 				82A707156A95AFA259E79E59 /* FocusManager.swift in Sources */,
 				92CC313D40574169944AFAF4 /* FocusScoreView.swift in Sources */,
 				02BCF6E2F86D522F58CC5E64 /* VoiceAlertService.swift in Sources */,
+				AF35B1B3862F4749784D8EE2 /* FocusSoundService.swift in Sources */,
 				449AF1AFE2E8D53CA874EF0C /* SessionManager.swift in Sources */,
 				E0B8547DFB1771704F630AF5 /* PreSessionSetupView.swift in Sources */,
 				AD14026CF98C778B28812E75 /* AuthService.swift in Sources */,

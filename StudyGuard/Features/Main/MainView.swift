@@ -106,6 +106,7 @@ struct MainView: View {
 
     private func makeSession(subject: String, duration: Int) -> SessionManager {
         SessionManager(subject: subject, targetDuration: duration,
+                       userId: auth.currentUserId,
                        sensitivity: AppSettingsStore.sensitivity,
                        voiceLanguage: AppSettingsStore.voiceLanguage,
                        voiceEnabled: AppSettingsStore.voiceEnabled)
@@ -115,7 +116,8 @@ struct MainView: View {
         guard let userId = auth.currentUserId, result.totalSeconds > 0 else { return }
         Task {
             try? await FirebaseService.shared.recordSession(
-                userId: userId, subject: result.subject, startTime: result.startedAt,
+                userId: userId, sessionId: result.sessionId,
+                subject: result.subject, startTime: result.startedAt,
                 totalSeconds: result.totalSeconds, targetMinutes: result.targetMinutes,
                 postureScore: result.avgPosture, focusScore: result.avgFocus,
                 postureAlertCount: result.postureAlertCount,

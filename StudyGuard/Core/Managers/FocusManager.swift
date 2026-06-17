@@ -22,6 +22,10 @@ final class FocusManager: ObservableObject {
     @Published private(set) var currentState: FocusState = .focused
     @Published private(set) var focusScore: Double = 100   // % focused in last 60s
     @Published private(set) var isFaceDetected = false
+    /// Smoothed face width (distance proxy); larger = leaning closer to the screen.
+    @Published private(set) var faceWidth: Double = 0
+
+    private var faceWidthEMA: Double = 0
 
     // MARK: - Temporal thresholds
 
@@ -116,6 +120,9 @@ final class FocusManager: ObservableObject {
         eyesClosedSince = signals.eyesClosed ? (eyesClosedSince ?? now) : nil
         lookingAwaySince = signals.lookingAway ? (lookingAwaySince ?? now) : nil
 
+        // Smooth the face-width distance proxy.
+        faceWidthEMA = faceWidthEMA == 0 ? signals.faceWidth : (0.7 * faceWidthEMA + 0.3 * signals.faceWidth)
+
         let state = resolveState(now: now)
         recordAndPublish(state: state, now: now, faceDetected: true)
     }
@@ -134,7 +141,7 @@ final class FocusManager: ObservableObject {
     private func recordAndPublish(state: FocusState, now: Date, faceDetected: Bool) {
         window.append(Sample(time: now, focused: state == .focused))
         pruneWindow(now: now)
-        publish(state: state, score: currentScore(), faceDetected: faceDetected)
+        publish(state: state, score: currentScore(), faceDetected: faceDetected, faceWidth: faceWidthEMA)
     }
 
     // MARK: - Scoring (inferenceQueue)
@@ -154,12 +161,13 @@ final class FocusManager: ObservableObject {
 
     // MARK: - Publishing
 
-    private func publish(state: FocusState, score: Double, faceDetected: Bool) {
+    private func publish(state: FocusState, score: Double, faceDetected: Bool, faceWidth: Double = 0) {
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }
             self.currentState = state
             self.focusScore = score
             self.isFaceDetected = faceDetected
+            self.faceWidth = faceWidth
         }
     }
 }
