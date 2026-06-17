@@ -40,7 +40,7 @@ struct SessionView: View {
         .onAppear(perform: start)
         .onDisappear { session.end() }
         .fullScreenCover(isPresented: $showBreak) {
-            BreakView(result: session.makeResult(), isMidSession: true) {
+            BreakView(result: session.makeResult(), isMidSession: true, userId: session.userId) {
                 showBreak = false
                 session.resume()
             }

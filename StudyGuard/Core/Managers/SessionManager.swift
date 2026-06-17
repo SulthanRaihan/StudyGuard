@@ -38,8 +38,16 @@ final class SessionManager: ObservableObject {
 
     let subject: String
     let targetDuration: Int            // minutes (user's choice)
+    let sessionId = UUID().uuidString  // shared by the session doc and its events
+    let userId: String?
     private(set) var startedAt = Date()
     private var targetSeconds: Int     // mutable: adaptive timer can extend it
+
+    // Episode tracking for event logging.
+    private var postureEpisodeType: PostureType?
+    private var postureEpisodeStart: Date?
+    private var focusEpisodeState: FocusState?
+    private var focusEpisodeStart: Date?
 
     // MARK: - Owned managers
 
@@ -57,10 +65,12 @@ final class SessionManager: ObservableObject {
     private var sampleCount = 0
     private var focusTimeline: [Int] = []   // per-minute focus score, for the Groq summary
 
-    init(subject: String, targetDuration: Int, sensitivity: AlertSensitivity = .medium,
+    init(subject: String, targetDuration: Int, userId: String? = nil,
+         sensitivity: AlertSensitivity = .medium,
          voiceLanguage: String = "en-US", voiceEnabled: Bool = true) {
         self.subject = subject
         self.targetDuration = targetDuration
+        self.userId = userId
         self.targetSeconds = targetDuration * 60
         self.remainingSeconds = targetDuration * 60
         posture.sensitivity = sensitivity
@@ -113,6 +123,7 @@ final class SessionManager: ObservableObject {
 
     /// Ends the session and releases the camera. `reason` defaults to a user-tap.
     func end(reason: EndReason = .userEnded) {
+        flushEpisodes()
         timer?.invalidate()
         timer = nil
         cancellables.removeAll()
@@ -126,6 +137,7 @@ final class SessionManager: ObservableObject {
     /// Snapshot of the finished session for the summary, break, and persistence.
     func makeResult() -> SessionResult {
         SessionResult(
+            sessionId: sessionId,
             subject: subject,
             totalSeconds: elapsedSeconds,
             targetMinutes: targetDuration,
@@ -160,6 +172,13 @@ final class SessionManager: ObservableObject {
         avgPosture = postureSum / Double(sampleCount)
         avgFocus = focusSum / Double(sampleCount)
 
+        // Log a focus sample every 30 seconds (Firestore focusSamples).
+        if elapsedSeconds % 30 == 0, let userId {
+            FirebaseService.shared.writeFocusSample(
+                userId: userId, sessionId: sessionId, minuteMark: elapsedSeconds / 60,
+                focusScore: focus.focusScore, state: focus.currentState.rawValue
+            )
+        }
         if elapsedSeconds % 60 == 0 {
             focusTimeline.append(Int(focus.focusScore))
             checkAdaptiveTimer()
@@ -200,32 +219,72 @@ final class SessionManager: ObservableObject {
     // MARK: - Voice coaching
 
     private func observeAlerts() {
-        // Sustained bad posture -> coach + count.
+        // Sustained bad posture -> coach + count + postureEvents.
         posture.$activeAlert
             .removeDuplicates()
             .sink { [weak self] alert in
-                guard let self, let alert else { return }
-                self.postureAlertCount += 1
-                self.voice.speak(self.postureMessage(for: alert), key: "posture-\(alert.rawValue)")
+                guard let self else { return }
+                let now = Date()
+                if let prev = self.postureEpisodeType, prev != alert {
+                    self.emitPostureEvent(type: prev, start: self.postureEpisodeStart, now: now)
+                    self.postureEpisodeType = nil; self.postureEpisodeStart = nil
+                }
+                if let alert, self.postureEpisodeType == nil {
+                    self.postureEpisodeType = alert
+                    self.postureEpisodeStart = now
+                    self.postureAlertCount += 1
+                    self.voice.speak(self.postureMessage(for: alert), key: "posture-\(alert.rawValue)")
+                }
             }
             .store(in: &cancellables)
 
-        // Focus state changes -> drowsy / distracted coaching.
+        // Focus state changes -> coaching + focusEvents.
         focus.$currentState
             .removeDuplicates()
             .sink { [weak self] state in
                 guard let self else { return }
+                let now = Date()
+                if let prev = self.focusEpisodeState, prev != state {
+                    self.emitFocusEvent(type: prev, start: self.focusEpisodeStart, now: now)
+                    self.focusEpisodeState = nil; self.focusEpisodeStart = nil
+                }
                 switch state {
                 case .drowsy:
                     self.voice.speak("You look drowsy — take a deep breath.", key: "drowsy", cooldown: 20)
+                    if self.focusEpisodeState == nil { self.focusEpisodeState = .drowsy; self.focusEpisodeStart = now }
                 case .distracted:
                     self.distractionCount += 1
                     self.voice.speak("Let's get back to your study material.", key: "distracted", cooldown: 45)
+                    if self.focusEpisodeState == nil { self.focusEpisodeState = .distracted; self.focusEpisodeStart = now }
                 case .focused:
                     break
                 }
             }
             .store(in: &cancellables)
+    }
+
+    private func emitPostureEvent(type: PostureType, start: Date?, now: Date) {
+        guard let userId, let start else { return }
+        let duration = max(1, Int(now.timeIntervalSince(start)))
+        let severity = duration >= 30 ? "severe" : (duration >= 15 ? "moderate" : "mild")
+        FirebaseService.shared.writePostureEvent(userId: userId, sessionId: sessionId,
+                                                 type: type.rawValue, severity: severity, duration: duration)
+    }
+
+    private func emitFocusEvent(type: FocusState, start: Date?, now: Date) {
+        guard let userId, let start else { return }
+        let duration = max(1, Int(now.timeIntervalSince(start)))
+        FirebaseService.shared.writeFocusEvent(userId: userId, sessionId: sessionId,
+                                               type: type.rawValue, duration: duration)
+    }
+
+    /// Flush any in-progress episodes (called when the session ends).
+    private func flushEpisodes() {
+        let now = Date()
+        if let type = postureEpisodeType { emitPostureEvent(type: type, start: postureEpisodeStart, now: now) }
+        if let state = focusEpisodeState { emitFocusEvent(type: state, start: focusEpisodeStart, now: now) }
+        postureEpisodeType = nil; postureEpisodeStart = nil
+        focusEpisodeState = nil; focusEpisodeStart = nil
     }
 
     private func postureMessage(for type: PostureType) -> String {

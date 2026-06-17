@@ -11,6 +11,8 @@ struct BreakView: View {
     let result: SessionResult
     /// `true` when opened from a paused session (button reads "Resume Studying").
     var isMidSession: Bool = false
+    /// When set, the break is logged to Firestore on finish.
+    var userId: String? = nil
     let onDone: () -> Void
 
     @State private var exercises: [BreakExercise] = []
@@ -20,9 +22,11 @@ struct BreakView: View {
     @State private var detailExercise: BreakExercise?
     @State private var timer: Timer?
 
-    init(result: SessionResult, isMidSession: Bool = false, onDone: @escaping () -> Void) {
+    init(result: SessionResult, isMidSession: Bool = false, userId: String? = nil,
+         onDone: @escaping () -> Void) {
         self.result = result
         self.isMidSession = isMidSession
+        self.userId = userId
         self.onDone = onDone
         _remaining = State(initialValue: result.breakMinutes * 60)
     }
@@ -129,6 +133,15 @@ struct BreakView: View {
 
     private func finish() {
         timer?.invalidate()
+        if let userId {
+            let logged = exercises.map { e -> BreakExercise in
+                var copy = e; copy.completed = doneIDs.contains(e.id); return copy
+            }
+            FirebaseService.shared.recordBreak(
+                userId: userId, sessionId: result.sessionId, reason: "pause",
+                exercises: logged, completed: !doneIDs.isEmpty
+            )
+        }
         onDone()
     }
 }

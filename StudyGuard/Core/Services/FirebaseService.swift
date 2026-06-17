@@ -141,12 +141,62 @@ final class FirebaseService {
         )
     }
 
+    // MARK: - Event logging (fire-and-forget)
+
+    func writeFocusSample(userId: String, sessionId: String, minuteMark: Int,
+                          focusScore: Double, state: String) {
+        Task {
+            try? await db.collection("focusSamples").addDocument(data: [
+                "userId": userId, "sessionId": sessionId,
+                "minuteMark": minuteMark, "focusScore": focusScore,
+                "state": state, "timestamp": Timestamp(date: Date())
+            ])
+        }
+    }
+
+    func writePostureEvent(userId: String, sessionId: String, type: String,
+                           severity: String, duration: Int) {
+        Task {
+            try? await db.collection("postureEvents").addDocument(data: [
+                "userId": userId, "sessionId": sessionId,
+                "type": type, "severity": severity, "duration": duration,
+                "timestamp": Timestamp(date: Date())
+            ])
+        }
+    }
+
+    func writeFocusEvent(userId: String, sessionId: String, type: String, duration: Int) {
+        Task {
+            try? await db.collection("focusEvents").addDocument(data: [
+                "userId": userId, "sessionId": sessionId,
+                "type": type, "duration": duration,
+                "timestamp": Timestamp(date: Date())
+            ])
+        }
+    }
+
+    func recordBreak(userId: String, sessionId: String, reason: String,
+                     exercises: [BreakExercise], completed: Bool) {
+        let exerciseData = exercises.map { e in
+            ["name": e.name, "duration": e.duration,
+             "targetArea": e.targetArea.rawValue, "completed": e.completed] as [String: Any]
+        }
+        Task {
+            try? await db.collection("breakSessions").addDocument(data: [
+                "userId": userId, "sessionId": sessionId, "reason": reason,
+                "exercises": exerciseData, "completed": completed,
+                "timestamp": Timestamp(date: Date())
+            ])
+        }
+    }
+
     // MARK: - Session persistence
 
     /// Saves a finished session and updates the user's XP/streak.
     /// Returns the XP earned for this session.
     @discardableResult
     func recordSession(userId: String,
+                       sessionId: String = UUID().uuidString,
                        subject: String,
                        startTime: Date,
                        totalSeconds: Int,
@@ -207,7 +257,7 @@ final class FirebaseService {
             "xpEarned": xpEarned,
             "status": status
         ]
-        try await db.collection("sessions").document(UUID().uuidString).setData(sessionData)
+        try await db.collection("sessions").document(sessionId).setData(sessionData)
 
         // Update the user's aggregates.
         try await userRef.updateData([
