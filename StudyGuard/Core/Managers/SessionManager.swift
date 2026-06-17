@@ -43,6 +43,9 @@ final class SessionManager: ObservableObject {
     private(set) var startedAt = Date()
     private var targetSeconds: Int     // mutable: adaptive timer can extend it
 
+    // Distance proxy: face width when sitting at a healthy distance (set at calibration).
+    private var baselineFaceWidth: Double = 0
+
     // Episode tracking for event logging.
     private var postureEpisodeType: PostureType?
     private var postureEpisodeStart: Date?
@@ -91,6 +94,7 @@ final class SessionManager: ObservableObject {
         posture.calibrate(seconds: 4) { [weak self] in
             guard let self, case .calibrating = self.phase else { return }
             self.startedAt = Date()
+            self.baselineFaceWidth = self.focus.faceWidth   // distance baseline
             self.observeAlerts()
             self.startTimer()
             self.phase = .studying
@@ -182,6 +186,10 @@ final class SessionManager: ObservableObject {
         if elapsedSeconds % 60 == 0 {
             focusTimeline.append(Int(focus.focusScore))
             checkAdaptiveTimer()
+        }
+        // Leaning-in detection (face appears noticeably larger than baseline).
+        if baselineFaceWidth > 0, focus.faceWidth > baselineFaceWidth * 1.25 {
+            voice.speak("You're leaning in too close — sit back a little.", key: "lean", cooldown: 25)
         }
         // Periodic wellness reminders (voice).
         if elapsedSeconds > 0 {

@@ -16,6 +16,9 @@ struct FocusSignals {
     let pitch: Double          // radians; head tilted up/down
     let eyesClosed: Bool       // instantaneous (a single closed frame = a blink)
     let lookingAway: Bool      // instantaneous head turn away from screen
+    /// Face bounding-box width (normalized). A distance proxy — a larger face means
+    /// the user is closer / leaning toward the screen.
+    let faceWidth: Double
 }
 
 /// Detects the user's face with Apple Vision and extracts focus-related signals
@@ -45,7 +48,8 @@ final class FocusDetector {
             yaw: yaw,
             pitch: pitch,
             eyesClosed: openness < eyesClosedThreshold,
-            lookingAway: abs(yaw) > yawAwayThreshold || abs(pitch) > pitchAwayThreshold
+            lookingAway: abs(yaw) > yawAwayThreshold || abs(pitch) > pitchAwayThreshold,
+            faceWidth: Double(face.boundingBox.width)
         )
     }
 
