@@ -189,6 +189,12 @@ struct SessionView: View {
                 Text("Sit up straight and look at the screen.\nThis helps Guri learn your good posture.")
                     .font(.subheadline).foregroundStyle(.white.opacity(0.85))
                     .multilineTextAlignment(.center)
+                Label("Tip: face the camera directly at eye level for the most accurate readings",
+                      systemImage: "camera.viewfinder")
+                    .font(.caption)
+                    .foregroundStyle(.white.opacity(0.7))
+                    .multilineTextAlignment(.center)
+                    .padding(.top, 4)
             }
             .padding(32)
         }
