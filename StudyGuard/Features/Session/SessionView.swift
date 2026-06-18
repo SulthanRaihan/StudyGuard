@@ -102,9 +102,15 @@ struct SessionView: View {
         }
         .padding()
         .onChange(of: posture.activeAlert) { newAlert in
-            // Fire a haptic only when a NEW alert starts, not on every frame it stays active.
-            guard newAlert != nil else { return }
+            // Fire a haptic + sound effect only when a NEW alert starts, not on
+            // every frame it stays active.
+            guard let newAlert else { return }
             UINotificationFeedbackGenerator().notificationOccurred(.warning)
+            switch newAlert {
+            case .tlf: SoundEffectService.shared.play("bungkuk")
+            case .tlb, .tlr, .tll: SoundEffectService.shared.play("leaning")
+            case .tup: break
+            }
         }
     }
 
