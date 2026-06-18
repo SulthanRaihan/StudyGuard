@@ -91,6 +91,9 @@ struct SessionView: View {
         VStack {
             header
             postureCard
+            if let alert = posture.activeAlert {
+                alertBanner(for: alert)
+            }
             Spacer()
             HStack(alignment: .bottom, spacing: 12) {
                 FocusScoreView(title: "Focus", score: focus.focusScore, caption: focusCaption)
@@ -98,6 +101,28 @@ struct SessionView: View {
             }
         }
         .padding()
+        .onChange(of: posture.activeAlert) { newAlert in
+            // Fire a haptic only when a NEW alert starts, not on every frame it stays active.
+            guard newAlert != nil else { return }
+            UINotificationFeedbackGenerator().notificationOccurred(.warning)
+        }
+    }
+
+    /// Prominent, hard-to-miss banner shown for as long as bad posture persists —
+    /// pairs with the voice coaching so the moment isn't easy to miss if the
+    /// audio cue alone goes unnoticed.
+    private func alertBanner(for alert: PostureType) -> some View {
+        Label(alert.coachingMessage, systemImage: "exclamationmark.triangle.fill")
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(.white)
+            .multilineTextAlignment(.leading)
+            .padding(.vertical, 12)
+            .padding(.horizontal, 16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.red.opacity(0.85), in: RoundedRectangle(cornerRadius: 14))
+            .overlay(RoundedRectangle(cornerRadius: 14).stroke(.white.opacity(0.4), lineWidth: 1))
+            .transition(.move(edge: .top).combined(with: .opacity))
+            .animation(.spring(response: 0.4, dampingFraction: 0.8), value: posture.activeAlert)
     }
 
     private var header: some View {
