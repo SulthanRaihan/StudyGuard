@@ -11,7 +11,7 @@ struct LoginView: View {
 
     @State private var email = ""
     @State private var password = ""
-    @FocusState private var focusedField: Field?
+    @SwiftUI.FocusState private var focusedField: Field?
 
     private enum Field { case email, password }
 

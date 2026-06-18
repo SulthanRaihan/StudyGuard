@@ -12,7 +12,7 @@ struct RegisterView: View {
     @State private var name = ""
     @State private var email = ""
     @State private var password = ""
-    @FocusState private var focusedField: Field?
+    @SwiftUI.FocusState private var focusedField: Field?
 
     private enum Field { case name, email, password }
 

@@ -14,7 +14,7 @@ struct BreakChatView: View {
     @State private var input = ""
     @State private var isSending = false
     @State private var errorText: String?
-    @FocusState private var inputFocused: Bool
+    @SwiftUI.FocusState private var inputFocused: Bool
 
     var body: some View {
         NavigationStack {
