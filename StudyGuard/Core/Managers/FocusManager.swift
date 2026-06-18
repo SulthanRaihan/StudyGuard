@@ -49,7 +49,11 @@ final class FocusManager: ObservableObject {
     // MARK: - State (inferenceQueue only)
 
     private var eyesClosedSince: Date?
+    private var eyesReopenedAt: Date?      // debounce: ignore brief open-blips mid-closure
     private var lookingAwaySince: Date?
+    private var lookingBackAt: Date?       // debounce: ignore brief glances back mid-distraction
+    private let reopenDebounce: TimeInterval = 0.4
+    private let lookBackDebounce: TimeInterval = 0.3
 
     private struct Sample { let time: Date; let focused: Bool }
     private var window: [Sample] = []
@@ -68,7 +72,9 @@ final class FocusManager: ObservableObject {
         inferenceQueue.async { [weak self] in
             self?.window.removeAll()
             self?.eyesClosedSince = nil
+            self?.eyesReopenedAt = nil
             self?.lookingAwaySince = nil
+            self?.lookingBackAt = nil
         }
         gate.lock(); isProcessing = false; lastInference = .distantPast; gate.unlock()
         publish(state: .focused, score: 100, faceDetected: false)
@@ -116,9 +122,30 @@ final class FocusManager: ObservableObject {
             return
         }
 
-        // Track sustained eye-closure and look-away.
-        eyesClosedSince = signals.eyesClosed ? (eyesClosedSince ?? now) : nil
-        lookingAwaySince = signals.lookingAway ? (lookingAwaySince ?? now) : nil
+        // Track sustained eye-closure, debounced so a single noisy "open" frame
+        // mid-blink-test doesn't reset the whole countdown.
+        if signals.eyesClosed {
+            eyesClosedSince = eyesClosedSince ?? now
+            eyesReopenedAt = nil
+        } else if eyesClosedSince != nil {
+            eyesReopenedAt = eyesReopenedAt ?? now
+            if now.timeIntervalSince(eyesReopenedAt!) >= reopenDebounce {
+                eyesClosedSince = nil
+                eyesReopenedAt = nil
+            }
+        }
+
+        // Same debounce pattern for sustained look-away.
+        if signals.lookingAway {
+            lookingAwaySince = lookingAwaySince ?? now
+            lookingBackAt = nil
+        } else if lookingAwaySince != nil {
+            lookingBackAt = lookingBackAt ?? now
+            if now.timeIntervalSince(lookingBackAt!) >= lookBackDebounce {
+                lookingAwaySince = nil
+                lookingBackAt = nil
+            }
+        }
 
         // Smooth the face-width distance proxy.
         faceWidthEMA = faceWidthEMA == 0 ? signals.faceWidth : (0.7 * faceWidthEMA + 0.3 * signals.faceWidth)

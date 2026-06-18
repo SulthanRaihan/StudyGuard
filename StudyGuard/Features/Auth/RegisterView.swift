@@ -70,6 +70,24 @@ struct RegisterView: View {
                 .buttonStyle(.sgPrimary)
                 .disabled(!canSubmit)
 
+                HStack {
+                    Rectangle().fill(Theme.navy.opacity(0.12)).frame(height: 1)
+                    Text("or").font(.caption).foregroundStyle(Theme.muted)
+                    Rectangle().fill(Theme.navy.opacity(0.12)).frame(height: 1)
+                }
+
+                Button {
+                    Task { await auth.signInWithGoogle() }
+                } label: {
+                    Label("Continue with Google", systemImage: "globe")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity).padding(.vertical, 16)
+                        .background(.white, in: RoundedRectangle(cornerRadius: 16))
+                        .foregroundStyle(Theme.navy)
+                        .overlay(RoundedRectangle(cornerRadius: 16).stroke(Theme.navy.opacity(0.15)))
+                }
+                .disabled(auth.isBusy)
+
                 Button("Already have an account? Sign In", action: onBackToLogin)
                     .font(.subheadline)
                     .foregroundStyle(Theme.orange)

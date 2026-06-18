@@ -25,8 +25,10 @@ struct FocusSignals {
 /// (eye openness for drowsiness, head pose for gaze-away). No custom model.
 final class FocusDetector {
 
-    /// Below this eye-openness ratio the eyes are considered closed.
-    private let eyesClosedThreshold = 0.18
+    /// Below this eye-openness ratio the eyes are considered closed. Raised from an
+    /// earlier 0.18 — too strict in practice, combined with single-frame noise it
+    /// meant sustained closure rarely got detected at all.
+    private let eyesClosedThreshold = 0.23
     /// Beyond these head angles (radians) the user is considered looking away.
     private let yawAwayThreshold = 0.50    // ~29°
     private let pitchAwayThreshold = 0.65  // ~37°

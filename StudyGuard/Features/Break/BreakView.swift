@@ -19,6 +19,7 @@ struct BreakView: View {
     @State private var doneIDs: Set<String> = []
     @State private var remaining: Int
     @State private var showChat = false
+    @State private var showScan = false
     @State private var detailExercise: BreakExercise?
     @State private var timer: Timer?
 
@@ -49,10 +50,17 @@ struct BreakView: View {
                     }
                 }
 
-                Button { showChat = true } label: {
-                    Label("Ask Guri (AI)", systemImage: "bubble.left.and.bubble.right.fill")
+                HStack(spacing: 12) {
+                    Button { showChat = true } label: {
+                        Label("Ask Guri", systemImage: "bubble.left.and.bubble.right.fill")
+                    }
+                    .buttonStyle(.sgSecondary)
+
+                    Button { showScan = true } label: {
+                        Label("Scan & Solve", systemImage: "text.viewfinder")
+                    }
+                    .buttonStyle(.sgSecondary)
                 }
-                .buttonStyle(.sgSecondary)
 
                 Button(isMidSession ? "Resume Studying" : "Done", action: finish)
                     .buttonStyle(.sgPrimary)
@@ -74,6 +82,9 @@ struct BreakView: View {
         }
         .sheet(isPresented: $showChat) {
             BreakChatView(subject: result.subject)
+        }
+        .fullScreenCover(isPresented: $showScan) {
+            ScanView()
         }
         .sheet(item: $detailExercise) { exercise in
             ExerciseDetailView(exercise: exercise)

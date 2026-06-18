@@ -18,6 +18,7 @@ struct SessionView: View {
     let onFinish: (SessionResult) -> Void
 
     @State private var showBreak = false
+    @State private var showSkeleton = true
 
     init(session: SessionManager, onFinish: @escaping (SessionResult) -> Void) {
         self.session = session
@@ -30,7 +31,7 @@ struct SessionView: View {
     var body: some View {
         ZStack {
             cameraLayer
-            if posture.isBodyDetected {
+            if showSkeleton, posture.isBodyDetected {
                 PostureOverlayView(joints: posture.joints).ignoresSafeArea()
             }
             overlay
@@ -110,6 +111,15 @@ struct SessionView: View {
                 .font(.system(size: 30, weight: .bold, design: .rounded).monospacedDigit())
                 .foregroundStyle(.white)
             Spacer()
+            Button {
+                showSkeleton.toggle()
+            } label: {
+                Image(systemName: showSkeleton ? "figure.walk.circle.fill" : "figure.walk.circle")
+                    .font(.title3)
+                    .padding(10)
+                    .background((showSkeleton ? Theme.orange : .white.opacity(0.18)), in: Circle())
+                    .foregroundStyle(.white)
+            }
             Button {
                 sound.toggle()
             } label: {

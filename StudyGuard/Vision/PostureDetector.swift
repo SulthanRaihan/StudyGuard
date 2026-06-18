@@ -70,10 +70,17 @@ enum PostureSkeleton {
 /// posture features, and classifies them with `PostureClassifier.mlmodel`.
 final class PostureDetector {
 
-    /// Minimum per-joint confidence to accept a Vision keypoint. Kept low because
-    /// Vision reports occluded-but-inferred joints with low confidence, and we want
-    /// to use those (the training pipeline likewise relied on estimated keypoints).
+    /// Minimum per-joint confidence to accept a Vision keypoint for ML classification.
+    /// Kept low because Vision reports occluded-but-inferred joints with low
+    /// confidence, and we want to use those (the training pipeline likewise relied
+    /// on estimated keypoints).
     private let minJointConfidence: Float = 0.1
+
+    /// Minimum confidence for a joint to be drawn in the on-screen skeleton overlay.
+    /// Much stricter than `minJointConfidence` — a desk setup often occludes hips/
+    /// elbows/wrists, and at low confidence Vision's *guessed* position for those
+    /// joints jumps around messily. Only draw joints Vision can actually see well.
+    private let minDisplayConfidence: Float = 0.45
 
     private let model: PostureClassifier
 
@@ -110,7 +117,7 @@ final class PostureDetector {
         guard let recognized = try? observation.recognizedPoints(.all) else { return [:] }
         var out: [String: CGPoint] = [:]
         for (joint, key) in map {
-            if let point = recognized[joint], point.confidence >= minJointConfidence {
+            if let point = recognized[joint], point.confidence >= minDisplayConfidence {
                 out[key] = point.location
             }
         }
