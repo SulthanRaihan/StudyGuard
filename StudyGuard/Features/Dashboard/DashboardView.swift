@@ -6,8 +6,8 @@
 import SwiftUI
 import Charts
 
-/// Weekly stats: streak hero, focus trend chart, summary tiles, per-subject
-/// breakdown, badges link.
+/// Weekly stats: streak hero, streak calendar, focus/posture trend charts,
+/// summary tiles with week-over-week deltas, per-subject breakdown, badges link.
 struct DashboardView: View {
     @ObservedObject var auth: AuthService
 
@@ -17,6 +17,7 @@ struct DashboardView: View {
     @State private var report: String?
     @State private var reportLoading = false
     @State private var reportError: String?
+    @State private var selectedDay: DayFocus?
 
     var body: some View {
         NavigationStack {
@@ -24,12 +25,9 @@ struct DashboardView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     header
                     heroCard
+                    streakCalendar
                     tiles
-                    weeklyChart
-                    postureChart
-                    weeklyReportCard
-                    recentSessions
-                    subjectBreakdown
+                    dataSection
                     badgesLink
                     Color.clear.frame(height: 90) // clear the floating nav
                 }
@@ -39,6 +37,9 @@ struct DashboardView: View {
             .navigationBarHidden(true)
         }
         .task { await load() }
+        .sheet(item: $selectedDay) { day in
+            daySheet(for: day)
+        }
     }
 
     private var header: some View {
@@ -86,6 +87,111 @@ struct DashboardView: View {
         .frame(maxWidth: .infinity)
     }
 
+    // MARK: - Streak calendar (last 5 weeks, GitHub-style heatmap)
+
+    private var streakCalendar: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Study Streak — Last 5 Weeks").font(.headline).foregroundStyle(Theme.navy)
+
+            let columns = Array(repeating: GridItem(.flexible(), spacing: 6), count: 7)
+            LazyVGrid(columns: columns, spacing: 6) {
+                ForEach(streakDays) { day in
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(intensityColor(day.minutes))
+                        .frame(height: 18)
+                }
+            }
+
+            HStack(spacing: 6) {
+                Text("Less").font(.caption2).foregroundStyle(Theme.muted)
+                ForEach([0, 10, 25, 50], id: \.self) { minutes in
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(intensityColor(minutes))
+                        .frame(width: 12, height: 12)
+                }
+                Text("More").font(.caption2).foregroundStyle(Theme.muted)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .sgCard()
+    }
+
+    private func intensityColor(_ minutes: Int) -> Color {
+        switch minutes {
+        case 0: return Theme.navy.opacity(0.06)
+        case 1..<10: return Theme.orange.opacity(0.25)
+        case 10..<25: return Theme.orange.opacity(0.5)
+        case 25..<50: return Theme.orange.opacity(0.75)
+        default: return Theme.orange
+        }
+    }
+
+    // MARK: - Tiles (with week-over-week deltas)
+
+    private var tiles: some View {
+        HStack(spacing: 12) {
+            tile("\(sessions.count)", "Sessions", "calendar", Theme.navy,
+                 delta: weekSessionDelta, deltaUnit: "")
+            tile("\(avg(\.focusScore))%", "Focus", "eye.fill", Theme.orange,
+                 delta: weekAvgDelta(\.focusScore))
+            tile("\(avg(\.postureScore))%", "Posture", "figure.stand", Theme.green,
+                 delta: weekAvgDelta(\.postureScore))
+        }
+    }
+
+    private func tile(_ value: String, _ label: String, _ icon: String, _ color: Color,
+                      delta: Int? = nil, deltaUnit: String = "%") -> some View {
+        VStack(spacing: 8) {
+            Image(systemName: icon)
+                .font(.subheadline)
+                .foregroundStyle(color)
+                .frame(width: 34, height: 34)
+                .background(color.opacity(0.12), in: Circle())
+            Text(value).font(.title3.bold()).foregroundStyle(Theme.navy)
+                .redacted(reason: isLoading ? .placeholder : [])
+            Text(label).font(.caption).foregroundStyle(Theme.muted)
+            if let delta, delta != 0 {
+                Label("\(delta > 0 ? "+" : "")\(delta)\(deltaUnit)", systemImage: delta > 0 ? "arrow.up.right" : "arrow.down.right")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(delta > 0 ? Theme.green : Color.red.opacity(0.75))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .sgCard(padding: 14)
+    }
+
+    // MARK: - Data section (charts/report/sessions/subjects, or empty state)
+
+    @ViewBuilder
+    private var dataSection: some View {
+        if !isLoading && sessions.isEmpty {
+            emptyState
+        } else {
+            weeklyChart
+            postureChart
+            weeklyReportCard
+            recentSessions
+            subjectBreakdown
+        }
+    }
+
+    private var emptyState: some View {
+        VStack(spacing: 14) {
+            BrandImage(name: "GuriHi", fallbackSystemName: "chart.bar.fill")
+                .frame(width: 110, height: 110)
+            Text("No sessions yet")
+                .font(.headline).foregroundStyle(Theme.navy)
+            Text("Start a study session and your focus, posture, and progress will show up here.")
+                .font(.subheadline).foregroundStyle(Theme.muted)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 36)
+        .sgCard()
+    }
+
     // MARK: - Weekly report
 
     private var weeklyReportCard: some View {
@@ -116,47 +222,19 @@ struct DashboardView: View {
 
     private func generateReport() async {
         reportError = nil; reportLoading = true
-        let calendar = Calendar.current
-        let weekStart = calendar.date(byAdding: .day, value: -7, to: Date()) ?? Date()
-        let week = sessions.filter { $0.endTime >= weekStart }
-        let total = week.reduce(0) { $0 + $1.totalSeconds } / 60
-        let avgF = week.isEmpty ? 0 : Int(week.map(\.focusScore).reduce(0, +) / Double(week.count))
-        let avgP = week.isEmpty ? 0 : Int(week.map(\.postureScore).reduce(0, +) / Double(week.count))
+        let total = thisWeekSessions.reduce(0) { $0 + $1.totalSeconds } / 60
+        let avgF = thisWeekSessions.isEmpty ? 0 : Int(thisWeekSessions.map(\.focusScore).reduce(0, +) / Double(thisWeekSessions.count))
+        let avgP = thisWeekSessions.isEmpty ? 0 : Int(thisWeekSessions.map(\.postureScore).reduce(0, +) / Double(thisWeekSessions.count))
         do {
             report = try await GroqService.shared.weeklyReport(
-                sessions: week.count, totalMinutes: total, avgFocus: avgF, avgPosture: avgP,
-                bestFocusHour: SessionStats.bestFocusHour(week),
-                weakestSubject: SessionStats.weakestSubject(week)
+                sessions: thisWeekSessions.count, totalMinutes: total, avgFocus: avgF, avgPosture: avgP,
+                bestFocusHour: SessionStats.bestFocusHour(thisWeekSessions),
+                weakestSubject: SessionStats.weakestSubject(thisWeekSessions)
             )
         } catch {
             reportError = error.localizedDescription
         }
         reportLoading = false
-    }
-
-    // MARK: - Tiles
-
-    private var tiles: some View {
-        HStack(spacing: 12) {
-            tile("\(sessions.count)", "Sessions", "calendar", Theme.navy)
-            tile("\(avg(\.focusScore))%", "Focus", "eye.fill", Theme.orange)
-            tile("\(avg(\.postureScore))%", "Posture", "figure.stand", Theme.green)
-        }
-    }
-
-    private func tile(_ value: String, _ label: String, _ icon: String, _ color: Color) -> some View {
-        VStack(spacing: 8) {
-            Image(systemName: icon)
-                .font(.subheadline)
-                .foregroundStyle(color)
-                .frame(width: 34, height: 34)
-                .background(color.opacity(0.12), in: Circle())
-            Text(value).font(.title3.bold()).foregroundStyle(Theme.navy)
-                .redacted(reason: isLoading ? .placeholder : [])
-            Text(label).font(.caption).foregroundStyle(Theme.muted)
-        }
-        .frame(maxWidth: .infinity)
-        .sgCard(padding: 14)
     }
 
     // MARK: - Weekly chart
@@ -187,6 +265,9 @@ struct DashboardView: View {
                 }
                 .chartYScale(domain: 0...100)
                 .frame(height: 180)
+                .chartOverlay { proxy in dayTapOverlay(proxy) }
+
+                Text("Tap a day to see its sessions").font(.caption2).foregroundStyle(Theme.muted)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -221,10 +302,62 @@ struct DashboardView: View {
                 }
                 .chartYScale(domain: 0...100)
                 .frame(height: 180)
+                .chartOverlay { proxy in dayTapOverlay(proxy) }
+
+                Text("Tap a day to see its sessions").font(.caption2).foregroundStyle(Theme.muted)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .sgCard()
+    }
+
+    /// Shared invisible tap layer for both charts — maps a tap's x position to the
+    /// nearest day (via the chart's categorical x axis) and opens that day's sessions.
+    /// Uses `SpatialTapGesture` (not `onTapGesture`) because we need the tap's
+    /// location to feed into `proxy.value(atX:)`.
+    private func dayTapOverlay(_ proxy: ChartProxy) -> some View {
+        GeometryReader { geo in
+            Rectangle().fill(.clear)
+                .contentShape(Rectangle())
+                .gesture(
+                    SpatialTapGesture().onEnded { value in
+                        let plotFrame = geo[proxy.plotAreaFrame]
+                        let x = value.location.x - plotFrame.origin.x
+                        guard let label: String = proxy.value(atX: x),
+                              let day = weeklyData.first(where: { $0.label == label }),
+                              !daySessions(for: day).isEmpty else { return }
+                        selectedDay = day
+                    }
+                )
+        }
+    }
+
+    private func daySheet(for day: DayFocus) -> some View {
+        let records = daySessions(for: day)
+        return NavigationStack {
+            ScrollView {
+                VStack(spacing: 0) {
+                    ForEach(Array(records.enumerated()), id: \.element.id) { index, record in
+                        NavigationLink {
+                            SessionDetailView(record: record)
+                        } label: {
+                            sessionRow(record, color: subjectColor(index))
+                        }
+                        .buttonStyle(.plain)
+                        if record.id != records.last?.id { Divider() }
+                    }
+                }
+                .padding(20)
+            }
+            .background(Theme.cream.ignoresSafeArea())
+            .navigationTitle(day.label)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") { selectedDay = nil }
+                }
+            }
+        }
     }
 
     // MARK: - Subject breakdown (proportional bars)
@@ -341,10 +474,17 @@ struct DashboardView: View {
 
     private struct DayFocus: Identifiable {
         let id = UUID()
+        let date: Date
         let label: String
         let focus: Double
         let posture: Double
         let isToday: Bool
+    }
+
+    private struct StreakDay: Identifiable {
+        let id = UUID()
+        let date: Date
+        let minutes: Int
     }
 
     private var weeklyData: [DayFocus] {
@@ -358,8 +498,23 @@ struct DashboardView: View {
                 daySessions.map(\.focusScore).reduce(0, +) / Double(daySessions.count)
             let posture = daySessions.isEmpty ? 0 :
                 daySessions.map(\.postureScore).reduce(0, +) / Double(daySessions.count)
-            return DayFocus(label: symbols[weekday], focus: focus, posture: posture, isToday: offset == 0)
+            return DayFocus(date: date, label: symbols[weekday], focus: focus, posture: posture, isToday: offset == 0)
         }
+    }
+
+    private var streakDays: [StreakDay] {
+        let calendar = Calendar.current
+        return (0..<35).reversed().map { offset -> StreakDay in
+            let date = calendar.date(byAdding: .day, value: -offset, to: Date()) ?? Date()
+            let daySessions = sessions.filter { calendar.isDate($0.endTime, inSameDayAs: date) }
+            let minutes = daySessions.reduce(0) { $0 + $1.totalSeconds } / 60
+            return StreakDay(date: date, minutes: minutes)
+        }
+    }
+
+    private func daySessions(for day: DayFocus) -> [FirebaseService.SessionRecord] {
+        let calendar = Calendar.current
+        return sessions.filter { calendar.isDate($0.endTime, inSameDayAs: day.date) }
     }
 
     private var subjectCounts: [(subject: String, count: Int)] {
@@ -372,6 +527,36 @@ struct DashboardView: View {
         guard !sessions.isEmpty else { return 0 }
         return Int(sessions.map { $0[keyPath: keyPath] }.reduce(0, +) / Double(sessions.count))
     }
+
+    // MARK: - Week-over-week deltas
+
+    private var thisWeekSessions: [FirebaseService.SessionRecord] {
+        let cutoff = Calendar.current.date(byAdding: .day, value: -7, to: Date()) ?? Date()
+        return sessions.filter { $0.endTime >= cutoff }
+    }
+
+    private var lastWeekSessions: [FirebaseService.SessionRecord] {
+        let calendar = Calendar.current
+        let weekAgo = calendar.date(byAdding: .day, value: -7, to: Date()) ?? Date()
+        let twoWeeksAgo = calendar.date(byAdding: .day, value: -14, to: Date()) ?? Date()
+        return sessions.filter { $0.endTime >= twoWeeksAgo && $0.endTime < weekAgo }
+    }
+
+    private var weekSessionDelta: Int? {
+        guard !thisWeekSessions.isEmpty || !lastWeekSessions.isEmpty else { return nil }
+        return thisWeekSessions.count - lastWeekSessions.count
+    }
+
+    private func weekAvgDelta(_ keyPath: KeyPath<FirebaseService.SessionRecord, Double>) -> Int? {
+        guard !thisWeekSessions.isEmpty || !lastWeekSessions.isEmpty else { return nil }
+        let currentAvg = thisWeekSessions.isEmpty ? 0 :
+            thisWeekSessions.map { $0[keyPath: keyPath] }.reduce(0, +) / Double(thisWeekSessions.count)
+        let prevAvg = lastWeekSessions.isEmpty ? 0 :
+            lastWeekSessions.map { $0[keyPath: keyPath] }.reduce(0, +) / Double(lastWeekSessions.count)
+        return Int((currentAvg - prevAvg).rounded())
+    }
+
+    // MARK: - Load
 
     private func load() async {
         guard let uid = auth.currentUserId else { isLoading = false; return }
