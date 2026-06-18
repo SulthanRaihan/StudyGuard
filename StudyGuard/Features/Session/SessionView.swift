@@ -18,7 +18,6 @@ struct SessionView: View {
     let onFinish: (SessionResult) -> Void
 
     @State private var showBreak = false
-    @State private var showSkeleton = true
 
     init(session: SessionManager, onFinish: @escaping (SessionResult) -> Void) {
         self.session = session
@@ -31,9 +30,6 @@ struct SessionView: View {
     var body: some View {
         ZStack {
             cameraLayer
-            if showSkeleton, posture.isBodyDetected {
-                PostureOverlayView(joints: posture.joints).ignoresSafeArea()
-            }
             overlay
             if case .calibrating = session.phase { calibratingOverlay }
             if case .paused = session.phase { pausedOverlay }
@@ -97,7 +93,11 @@ struct SessionView: View {
             Spacer()
             HStack(alignment: .bottom, spacing: 12) {
                 FocusScoreView(title: "Focus", score: focus.focusScore, caption: focusCaption)
+                    .overlay(alignment: .topTrailing) { stickerBadge(focusStickerName) }
+                    .animation(.spring(response: 0.35, dampingFraction: 0.7), value: focusStickerName)
                 FocusScoreView(title: "Posture", score: posture.postureScore, caption: postureCaption)
+                    .overlay(alignment: .topTrailing) { stickerBadge(postureStickerName) }
+                    .animation(.spring(response: 0.35, dampingFraction: 0.7), value: postureStickerName)
             }
         }
         .padding()
@@ -136,15 +136,6 @@ struct SessionView: View {
                 .font(.system(size: 30, weight: .bold, design: .rounded).monospacedDigit())
                 .foregroundStyle(.white)
             Spacer()
-            Button {
-                showSkeleton.toggle()
-            } label: {
-                Image(systemName: showSkeleton ? "figure.walk.circle.fill" : "figure.walk.circle")
-                    .font(.title3)
-                    .padding(10)
-                    .background((showSkeleton ? Theme.orange : .white.opacity(0.18)), in: Circle())
-                    .foregroundStyle(.white)
-            }
             Button {
                 sound.toggle()
             } label: {
@@ -198,6 +189,44 @@ struct SessionView: View {
 
     private var postureCaption: String {
         posture.dominantIssue?.displayName ?? "Upright"
+    }
+
+    // MARK: - State stickers
+
+    /// Sticker asset matching the current posture: "Good Form" / "BUNGKUK" (slouch
+    /// forward) / "Leaning" (leaning back or tilted). Nil while no body is detected.
+    private var postureStickerName: String? {
+        guard posture.isBodyDetected, let type = posture.currentPosture else { return nil }
+        switch type {
+        case .tup: return "Good Form"
+        case .tlf: return "BUNGKUK"
+        case .tlb, .tlr, .tll: return "Leaning"
+        }
+    }
+
+    /// Sticker asset matching the current focus state: "drowsy" / "distract".
+    /// Nil while focused or no face detected (no sticker needed).
+    private var focusStickerName: String? {
+        guard focus.isFaceDetected else { return nil }
+        switch focus.currentState {
+        case .focused: return nil
+        case .drowsy: return "drowsy"
+        case .distracted: return "distract"
+        }
+    }
+
+    @ViewBuilder
+    private func stickerBadge(_ name: String?) -> some View {
+        if let name {
+            BrandImage(name: name, fallbackSystemName: "face.smiling")
+                .frame(width: 40, height: 40)
+                .background(.white, in: Circle())
+                .overlay(Circle().stroke(Theme.orange, lineWidth: 2))
+                .shadow(color: .black.opacity(0.3), radius: 3, y: 2)
+                .offset(x: 12, y: -12)
+                .transition(.scale.combined(with: .opacity))
+                .id(name)
+        }
     }
 
     // MARK: - Calibrating overlay
