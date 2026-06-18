@@ -26,6 +26,7 @@ struct DashboardView: View {
                     heroCard
                     tiles
                     weeklyChart
+                    postureChart
                     weeklyReportCard
                     recentSessions
                     subjectBreakdown
@@ -192,6 +193,40 @@ struct DashboardView: View {
         .sgCard()
     }
 
+    // MARK: - Posture chart (mirrors the focus chart)
+
+    private var postureChart: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Posture — Last 7 Days").font(.headline).foregroundStyle(Theme.navy)
+                Spacer()
+                if let best = weeklyData.max(by: { $0.posture < $1.posture }), best.posture > 0 {
+                    Label("Best: \(best.label)", systemImage: "trophy.fill")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(Theme.green)
+                }
+            }
+            if weeklyData.allSatisfy({ $0.posture == 0 }) {
+                Text("No session data this week yet.")
+                    .font(.callout).foregroundStyle(Theme.muted)
+                    .frame(maxWidth: .infinity, minHeight: 120)
+            } else {
+                Chart(weeklyData) { day in
+                    BarMark(
+                        x: .value("Day", day.label),
+                        y: .value("Posture", day.posture)
+                    )
+                    .foregroundStyle(day.isToday ? Theme.navy.gradient : Theme.green.gradient)
+                    .cornerRadius(6)
+                }
+                .chartYScale(domain: 0...100)
+                .frame(height: 180)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .sgCard()
+    }
+
     // MARK: - Subject breakdown (proportional bars)
 
     private var subjectBreakdown: some View {
@@ -308,6 +343,7 @@ struct DashboardView: View {
         let id = UUID()
         let label: String
         let focus: Double
+        let posture: Double
         let isToday: Bool
     }
 
@@ -320,7 +356,9 @@ struct DashboardView: View {
             let daySessions = sessions.filter { calendar.isDate($0.endTime, inSameDayAs: date) }
             let focus = daySessions.isEmpty ? 0 :
                 daySessions.map(\.focusScore).reduce(0, +) / Double(daySessions.count)
-            return DayFocus(label: symbols[weekday], focus: focus, isToday: offset == 0)
+            let posture = daySessions.isEmpty ? 0 :
+                daySessions.map(\.postureScore).reduce(0, +) / Double(daySessions.count)
+            return DayFocus(label: symbols[weekday], focus: focus, posture: posture, isToday: offset == 0)
         }
     }
 
