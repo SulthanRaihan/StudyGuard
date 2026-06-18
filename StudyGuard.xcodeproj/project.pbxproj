@@ -161,7 +161,7 @@
 		EB7CDA542FDC2C0700DE8E7E /* PostureClassifier.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = PostureClassifier.mlmodel; sourceTree = "<group>"; };
 		EB7CDA562FDC3A4800DE8E7E /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		EBFBE9BF2FE41EAC00057B10 /* bungkuk.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = bungkuk.mp3; sourceTree = "<group>"; };
-		EBFBE9C22FE41EF500057B10 /* leaning.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = leaning.mp3; path = ../../../Downloads/leaning.mp3; sourceTree = "<group>"; };
+		EBFBE9C22FE41EF500057B10 /* leaning.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = leaning.mp3; sourceTree = "<group>"; };
 		ED914B618EFE9E83BCCE5395 /* ExerciseDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseDetailView.swift; sourceTree = "<group>"; };
 		F012EE7887C7012F71F9C3DC /* StudyPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyPlan.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
