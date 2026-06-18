@@ -16,6 +16,7 @@ struct ScanView: View {
     @State private var showAnswer = false
     @State private var showFlashcards = false
     @State private var showCamera = false
+    @State private var showLibrary = false
     @State private var isLoading = false
     @State private var isScanning = false
     @State private var errorText: String?
@@ -50,10 +51,23 @@ struct ScanView: View {
             .sheet(isPresented: $showAnswer) { answerSheet }
             .sheet(isPresented: $showFlashcards) { FlashcardsView(cards: flashcards) }
             .fullScreenCover(isPresented: $showCamera) {
-                CameraPhotoPicker { image in
-                    showCamera = false
-                    Task { await scan(image) }
-                }
+                CameraPhotoPicker(
+                    onImage: { image in
+                        showCamera = false
+                        Task { await scan(image) }
+                    },
+                    onCancel: { showCamera = false }
+                )
+                .ignoresSafeArea()
+            }
+            .sheet(isPresented: $showLibrary) {
+                PhotoLibraryPicker(
+                    onImage: { image in
+                        showLibrary = false
+                        Task { await scan(image) }
+                    },
+                    onCancel: { showLibrary = false }
+                )
                 .ignoresSafeArea()
             }
         }
@@ -72,15 +86,23 @@ struct ScanView: View {
     }
 
     private var scanButton: some View {
-        Button { showCamera = true } label: {
-            if isScanning {
-                ProgressView().tint(.white)
-            } else {
-                Label("Scan with Camera", systemImage: "camera.fill")
+        HStack(spacing: 12) {
+            Button { showCamera = true } label: {
+                if isScanning {
+                    ProgressView().tint(.white)
+                } else {
+                    Label("Take Photo", systemImage: "camera.fill")
+                }
             }
+            .buttonStyle(.sgPrimary)
+            .disabled(isScanning)
+
+            Button { showLibrary = true } label: {
+                Label("Choose Photo", systemImage: "photo.on.rectangle")
+            }
+            .buttonStyle(.sgSecondary)
+            .disabled(isScanning)
         }
-        .buttonStyle(.sgPrimary)
-        .disabled(isScanning)
     }
 
     private var editor: some View {

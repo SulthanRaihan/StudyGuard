@@ -5,38 +5,96 @@
 
 import SwiftUI
 import UIKit
+import PhotosUI
 import Vision
 
 /// Opens the camera to take a photo, then runs on-device text recognition.
-/// Works on every device (unlike VisionKit's live DataScanner).
+/// Camera-only — see `PhotoLibraryPicker` for picking an existing photo.
 struct CameraPhotoPicker: UIViewControllerRepresentable {
     let onImage: (UIImage) -> Void
+    var onCancel: () -> Void = {}
 
     func makeUIViewController(context: Context) -> UIImagePickerController {
         let picker = UIImagePickerController()
-        picker.sourceType = UIImagePickerController.isSourceTypeAvailable(.camera) ? .camera : .photoLibrary
+        picker.sourceType = .camera
         picker.delegate = context.coordinator
         return picker
     }
 
     func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
 
-    func makeCoordinator() -> Coordinator { Coordinator(onImage: onImage) }
+    func makeCoordinator() -> Coordinator { Coordinator(onImage: onImage, onCancel: onCancel) }
 
     final class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
         let onImage: (UIImage) -> Void
-        init(onImage: @escaping (UIImage) -> Void) { self.onImage = onImage }
+        let onCancel: () -> Void
+        init(onImage: @escaping (UIImage) -> Void, onCancel: @escaping () -> Void) {
+            self.onImage = onImage
+            self.onCancel = onCancel
+        }
 
         func imagePickerController(_ picker: UIImagePickerController,
                                    didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+            picker.dismiss(animated: true)
             if let image = info[.originalImage] as? UIImage {
                 onImage(image)
+            } else {
+                onCancel()
             }
-            picker.dismiss(animated: true)
         }
 
         func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
             picker.dismiss(animated: true)
+            onCancel()
+        }
+    }
+}
+
+/// Picks a single existing photo via the modern, permission-free `PHPickerViewController`
+/// (unlike `UIImagePickerController(sourceType: .photoLibrary)`, this never shows the
+/// buggy "Limited Library" checkmark/Add screen — it runs out-of-process and the app
+/// only ever receives the one photo the user picked).
+struct PhotoLibraryPicker: UIViewControllerRepresentable {
+    let onImage: (UIImage) -> Void
+    var onCancel: () -> Void = {}
+
+    func makeUIViewController(context: Context) -> PHPickerViewController {
+        var config = PHPickerConfiguration()
+        config.filter = .images
+        config.selectionLimit = 1
+        let picker = PHPickerViewController(configuration: config)
+        picker.delegate = context.coordinator
+        return picker
+    }
+
+    func updateUIViewController(_ uiViewController: PHPickerViewController, context: Context) {}
+
+    func makeCoordinator() -> Coordinator { Coordinator(onImage: onImage, onCancel: onCancel) }
+
+    final class Coordinator: NSObject, PHPickerViewControllerDelegate {
+        let onImage: (UIImage) -> Void
+        let onCancel: () -> Void
+        init(onImage: @escaping (UIImage) -> Void, onCancel: @escaping () -> Void) {
+            self.onImage = onImage
+            self.onCancel = onCancel
+        }
+
+        func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+            picker.dismiss(animated: true)
+            guard let provider = results.first?.itemProvider,
+                  provider.canLoadObject(ofClass: UIImage.self) else {
+                onCancel()
+                return
+            }
+            provider.loadObject(ofClass: UIImage.self) { [onImage, onCancel] image, _ in
+                DispatchQueue.main.async {
+                    if let image = image as? UIImage {
+                        onImage(image)
+                    } else {
+                        onCancel()
+                    }
+                }
+            }
         }
     }
 }
