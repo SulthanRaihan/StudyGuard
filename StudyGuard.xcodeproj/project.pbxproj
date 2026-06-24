@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		02BCF6E2F86D522F58CC5E64 /* VoiceAlertService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BF5E28D4C88A9152DBCA152 /* VoiceAlertService.swift */; };
-		BC8067362B935DA8C427AFD7 /* SoundEffectService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D295B5E9F3E97B67A7645AD8 /* SoundEffectService.swift */; };
 		03394CF303543D04757ABF03 /* ExerciseCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79341EF9E2A1A7A72D484D7F /* ExerciseCardView.swift */; };
 		05B39AD61D8377C74113F05C /* BreakExercise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54B4CD4745E9B85968858E35 /* BreakExercise.swift */; };
 		12A26B166B7B4F4B50F76BB0 /* StudySession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F437C8ADD353EE04FE086F8 /* StudySession.swift */; };
@@ -44,6 +43,7 @@
 		B2DF9A52DF76C56D1CA56FDE /* PlannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44F882D158C2F1134B91BEE /* PlannerView.swift */; };
 		B4AAB42CBDE584FD7B8A8C4A /* BreakChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 306FF293E9E36510B62CC198 /* BreakChatView.swift */; };
 		BC6E74B0A45A83264D2DC7FC /* BrandKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF1437B67ABC02C0844DA9BD /* BrandKit.swift */; };
+		BC8067362B935DA8C427AFD7 /* SoundEffectService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D295B5E9F3E97B67A7645AD8 /* SoundEffectService.swift */; };
 		C36CC7B60FA8DF14C7DF14EB /* GroqService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CE882BF5DD03D1AB989492F /* GroqService.swift */; };
 		C52F0C9BE0898C948B92EE21 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBDBAE345B2026156BEF5102 /* OnboardingView.swift */; };
 		C7E934C252ACA0265B381984 /* FocusDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72100A898E3DD23F425C3196 /* FocusDetector.swift */; };
@@ -115,7 +115,6 @@
 		5495805201A8DE8052472080 /* ScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanView.swift; sourceTree = "<group>"; };
 		54B4CD4745E9B85968858E35 /* BreakExercise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreakExercise.swift; sourceTree = "<group>"; };
 		5BF5E28D4C88A9152DBCA152 /* VoiceAlertService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceAlertService.swift; sourceTree = "<group>"; };
-		D295B5E9F3E97B67A7645AD8 /* SoundEffectService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundEffectService.swift; sourceTree = "<group>"; };
 		62B49471C42D31B5B7709E52 /* TextScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextScanner.swift; sourceTree = "<group>"; };
 		65FAE598CB62D92A0685A019 /* Secrets.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Secrets.plist; sourceTree = "<group>"; };
 		68BAA2566E2B4E45EA07CB84 /* DataScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataScannerView.swift; sourceTree = "<group>"; };
@@ -142,6 +141,7 @@
 		C44042E43714C4527CE79F26 /* FocusSample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusSample.swift; sourceTree = "<group>"; };
 		CB7E9EC6C7F33D26C13A2BEB /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		D1F79F844C975C5B734A6732 /* PostureOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostureOverlayView.swift; sourceTree = "<group>"; };
+		D295B5E9F3E97B67A7645AD8 /* SoundEffectService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundEffectService.swift; sourceTree = "<group>"; };
 		D44F882D158C2F1134B91BEE /* PlannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlannerView.swift; sourceTree = "<group>"; };
 		D708A585DD6B896F818E119A /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		E22BCE5D1A8661DE28730E31 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
@@ -827,7 +827,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"StudyGuard/Preview Content\"";
-				DEVELOPMENT_TEAM = CT956VYJQ9;
+				DEVELOPMENT_TEAM = AKWAN7LLB7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = StudyGuard/Info.plist;
@@ -842,7 +842,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = cn.edu.njxzc.StudyGuard;
+				PRODUCT_BUNDLE_IDENTIFIER = a.StudyGuard;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -858,7 +858,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"StudyGuard/Preview Content\"";
-				DEVELOPMENT_TEAM = CT956VYJQ9;
+				DEVELOPMENT_TEAM = AKWAN7LLB7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = StudyGuard/Info.plist;
@@ -873,7 +873,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = cn.edu.njxzc.StudyGuard;
+				PRODUCT_BUNDLE_IDENTIFIER = a.StudyGuard;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
