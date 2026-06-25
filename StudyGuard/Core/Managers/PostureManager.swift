@@ -54,6 +54,10 @@ final class PostureManager: ObservableObject {
     private let minConfidence: Double = 0.30        // ignore weak predictions
     private let smoothingWindow: TimeInterval = 1.2 // majority-vote horizon
     private let switchThreshold: Double = 0.60      // share of window needed to switch
+    /// Lower bar specifically for switching into TLF (slouch forward) — the
+    /// underlying CoreML model's documented weak spot is TLF recall (~62-79%),
+    /// so requiring the same 60% majority as other classes under-detects it.
+    private let slouchSwitchThreshold: Double = 0.40
 
     // MARK: - Scoring state (inferenceQueue only)
 
@@ -225,7 +229,8 @@ final class PostureManager: ObservableObject {
         guard let top = counts.max(by: { $0.value < $1.value }) else { return stableType }
         if top.key == stableType { return stableType }
         let share = Double(top.value) / Double(rawHistory.count)
-        return share >= switchThreshold ? top.key : (stableType ?? top.key)
+        let threshold = top.key == .tlf ? slouchSwitchThreshold : switchThreshold
+        return share >= threshold ? top.key : (stableType ?? top.key)
     }
 
     private func smoothedConfidence(for type: PostureType?) -> Double {

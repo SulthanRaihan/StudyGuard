@@ -241,7 +241,7 @@ final class SessionManager: ObservableObject {
                     self.postureEpisodeType = alert
                     self.postureEpisodeStart = now
                     self.postureAlertCount += 1
-                    self.voice.speak(self.postureMessage(for: alert), key: "posture-\(alert.rawValue)")
+                    self.voice.speak(alert.coachingMessage, key: "posture-\(alert.rawValue)")
                 }
             }
             .store(in: &cancellables)
@@ -293,15 +293,5 @@ final class SessionManager: ObservableObject {
         if let state = focusEpisodeState { emitFocusEvent(type: state, start: focusEpisodeStart, now: now) }
         postureEpisodeType = nil; postureEpisodeStart = nil
         focusEpisodeState = nil; focusEpisodeStart = nil
-    }
-
-    private func postureMessage(for type: PostureType) -> String {
-        switch type {
-        case .tlf: return "You're slouching forward — sit up straight."
-        case .tlb: return "You're leaning too far back."
-        case .tlr: return "You're tilting to the right — straighten up."
-        case .tll: return "You're tilting to the left — straighten up."
-        case .tup: return ""
-        }
     }
 }

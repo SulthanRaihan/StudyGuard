@@ -30,9 +30,6 @@ struct SessionView: View {
     var body: some View {
         ZStack {
             cameraLayer
-            if posture.isBodyDetected {
-                PostureOverlayView(joints: posture.joints).ignoresSafeArea()
-            }
             overlay
             if case .calibrating = session.phase { calibratingOverlay }
             if case .paused = session.phase { pausedOverlay }
@@ -90,13 +87,48 @@ struct SessionView: View {
         VStack {
             header
             postureCard
+            if let alert = posture.activeAlert {
+                alertBanner(for: alert)
+            }
             Spacer()
             HStack(alignment: .bottom, spacing: 12) {
                 FocusScoreView(title: "Focus", score: focus.focusScore, caption: focusCaption)
+                    .overlay(alignment: .topTrailing) { stickerBadge(focusStickerName) }
+                    .animation(.spring(response: 0.35, dampingFraction: 0.7), value: focusStickerName)
                 FocusScoreView(title: "Posture", score: posture.postureScore, caption: postureCaption)
+                    .overlay(alignment: .topTrailing) { stickerBadge(postureStickerName) }
+                    .animation(.spring(response: 0.35, dampingFraction: 0.7), value: postureStickerName)
             }
         }
         .padding()
+        .onChange(of: posture.activeAlert) { newAlert in
+            // Fire a haptic + sound effect only when a NEW alert starts, not on
+            // every frame it stays active.
+            guard let newAlert else { return }
+            UINotificationFeedbackGenerator().notificationOccurred(.warning)
+            switch newAlert {
+            case .tlf: SoundEffectService.shared.play("bungkuk")
+            case .tlb, .tlr, .tll: SoundEffectService.shared.play("leaning")
+            case .tup: break
+            }
+        }
+    }
+
+    /// Prominent, hard-to-miss banner shown for as long as bad posture persists —
+    /// pairs with the voice coaching so the moment isn't easy to miss if the
+    /// audio cue alone goes unnoticed.
+    private func alertBanner(for alert: PostureType) -> some View {
+        Label(alert.coachingMessage, systemImage: "exclamationmark.triangle.fill")
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(.white)
+            .multilineTextAlignment(.leading)
+            .padding(.vertical, 12)
+            .padding(.horizontal, 16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.red.opacity(0.85), in: RoundedRectangle(cornerRadius: 14))
+            .overlay(RoundedRectangle(cornerRadius: 14).stroke(.white.opacity(0.4), lineWidth: 1))
+            .transition(.move(edge: .top).combined(with: .opacity))
+            .animation(.spring(response: 0.4, dampingFraction: 0.8), value: posture.activeAlert)
     }
 
     private var header: some View {
@@ -165,6 +197,44 @@ struct SessionView: View {
         posture.dominantIssue?.displayName ?? "Upright"
     }
 
+    // MARK: - State stickers
+
+    /// Sticker asset matching the current posture: "Good Form" / "BUNGKUK" (slouch
+    /// forward) / "Leaning" (leaning back or tilted). Nil while no body is detected.
+    private var postureStickerName: String? {
+        guard posture.isBodyDetected, let type = posture.currentPosture else { return nil }
+        switch type {
+        case .tup: return "Good Form"
+        case .tlf: return "BUNGKUK"
+        case .tlb, .tlr, .tll: return "Leaning"
+        }
+    }
+
+    /// Sticker asset matching the current focus state: "drowsy" / "distract".
+    /// Nil while focused or no face detected (no sticker needed).
+    private var focusStickerName: String? {
+        guard focus.isFaceDetected else { return nil }
+        switch focus.currentState {
+        case .focused: return nil
+        case .drowsy: return "drowsy"
+        case .distracted: return "distract"
+        }
+    }
+
+    @ViewBuilder
+    private func stickerBadge(_ name: String?) -> some View {
+        if let name {
+            BrandImage(name: name, fallbackSystemName: "face.smiling")
+                .frame(width: 40, height: 40)
+                .background(.white, in: Circle())
+                .overlay(Circle().stroke(Theme.orange, lineWidth: 2))
+                .shadow(color: .black.opacity(0.3), radius: 3, y: 2)
+                .offset(x: 12, y: -12)
+                .transition(.scale.combined(with: .opacity))
+                .id(name)
+        }
+    }
+
     // MARK: - Calibrating overlay
 
     private var calibratingOverlay: some View {
@@ -179,6 +249,12 @@ struct SessionView: View {
                 Text("Sit up straight and look at the screen.\nThis helps Guri learn your good posture.")
                     .font(.subheadline).foregroundStyle(.white.opacity(0.85))
                     .multilineTextAlignment(.center)
+                Label("Tip: face the camera directly at eye level for the most accurate readings",
+                      systemImage: "camera.viewfinder")
+                    .font(.caption)
+                    .foregroundStyle(.white.opacity(0.7))
+                    .multilineTextAlignment(.center)
+                    .padding(.top, 4)
             }
             .padding(32)
         }
